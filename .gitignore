@@ -1,0 +1,166 @@
+# =============================================================================
+# VITA Backend — .gitignore
+# ASP.NET Core / .NET 10 / EF Core / PostgreSQL
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Secretos y configuración local (NUNCA subir)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+appsettings.*.local.json
+appsettings.Local.json
+secrets.json
+**/Properties/launchSettings.local.json
+
+# Certificados y claves
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+
+# -----------------------------------------------------------------------------
+# Build / artefactos .NET
+# -----------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+publish/
+publish-*/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+
+# Debug / Release
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+
+# Publish profiles locales (si tienen secretos)
+**/Properties/PublishProfiles/*.pubxml.user
+
+# -----------------------------------------------------------------------------
+# NuGet
+# -----------------------------------------------------------------------------
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+.nuget/
+*.nuget.props
+*.nuget.targets
+
+# -----------------------------------------------------------------------------
+# Tests
+# -----------------------------------------------------------------------------
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage*/
+TestResults/
+BenchmarkDotNet.Artifacts/
+nunit-*.xml
+TestResult.xml
+
+# -----------------------------------------------------------------------------
+# Entity Framework / migraciones temporales
+# -----------------------------------------------------------------------------
+# No ignorar Migrations/ (sí van al repo)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# -----------------------------------------------------------------------------
+# IDE — Visual Studio / VS Code / Rider / Cursor
+# -----------------------------------------------------------------------------
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.sln.iml
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.DotSettings.user
+
+# -----------------------------------------------------------------------------
+# Herramientas / scaffolding
+# -----------------------------------------------------------------------------
+ScaffoldingReadMe.txt
+StyleCopReport.xml
+.tye/
+Generated\ Files/
+
+# -----------------------------------------------------------------------------
+# Sistema operativo
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# -----------------------------------------------------------------------------
+# Miscelánea
+# -----------------------------------------------------------------------------
+*.swp
+*.swo
+*~
+*.bak
+*.old
+*.orig
+*.temp
+*.tmp
+mono_crash.*
+node_modules/

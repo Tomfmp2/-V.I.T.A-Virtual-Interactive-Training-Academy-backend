@@ -1,0 +1,4 @@
+@Vita.Api_HostAddress = http://localhost:5044
+
+### Ejemplo (agregar endpoints cuando existan)
+# GET {{Vita.Api_HostAddress}}/api/...
