@@ -164,3 +164,6 @@ $RECYCLE.BIN/
 *.tmp
 mono_crash.*
 node_modules/
+
+
+appsettings.Development.json
