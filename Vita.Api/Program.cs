@@ -53,12 +53,25 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Aplica las migraciones automaticamente al arrancar
-//    (así cualquiera con el Postgres local monta las tablas con solo 'dotnet run')
+// Crea las tablas y siembra roles
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var services = scope.ServiceProvider;
+
+    //  Aplica migraciones (crea las tablas)
+    var db = services.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
+
+    //  Siembra los roles base si no existen
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roles = { "Admin", "Instructor", "Estudiante" };
+    foreach (var rol in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(rol))
+        {
+            await roleManager.CreateAsync(new IdentityRole(rol));
+        }
+    }
 }
 
 if (app.Environment.IsDevelopment())
