@@ -1,10 +1,10 @@
-// =============================================================================
-// VITA — Modelo de datos (DBML)
-// Plataforma de cursos · ASP.NET Core Identity + Entity Framework Core
+﻿// =============================================================================
+// VITA ÔÇö Modelo de datos (DBML)
+// Plataforma de cursos ┬À ASP.NET Core Identity + Entity Framework Core
 // =============================================================================
 //
-// Propósito
-//   Diagrama / referencia del esquema lógico. NO es el mecanismo diario para
+// Prop├│sito
+//   Diagrama / referencia del esquema l├│gico. NO es el mecanismo diario para
 //   crear o actualizar la base de datos.
 //
 // Fuente de verdad en runtime
@@ -13,7 +13,7 @@
 // Base de datos local
 //   academia_cursos
 //
-// Decisión de arquitectura
+// Decisi├│n de arquitectura
 //   - Identity es la fuente de verdad de usuarios y roles (AspNet*).
 //   - No existen tablas manuales "usuarios" ni "roles".
 //   - AspNetUsers.Id es string (GUID de Identity). Las FK a usuarios usan el
@@ -23,14 +23,14 @@
 //   - permisos / rol_permisos son opcionales (permisos granulares). No
 //     reemplazan AspNetRoles ni AspNetUserRoles.
 //
-// Herramienta de visualización sugerida
+// Herramienta de visualizaci├│n sugerida
 //   https://dbdiagram.io  (pegar este archivo)
 //
 // =============================================================================
 
 
 // -----------------------------------------------------------------------------
-// 1. IDENTITY — Usuarios, roles y asignación usuario–rol
+// 1. IDENTITY ÔÇö Usuarios, roles y asignaci├│n usuarioÔÇôrol
 //    Generado / gestionado por ASP.NET Core Identity.
 //    ApplicationUser extiende IdentityUser con los campos VITA al final.
 // -----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ Table AspNetUsers {
 
   AccessFailedCount int
 
-  // --- Extensión ApplicationUser (dominio VITA) ---
+  // --- Extensi├│n ApplicationUser (dominio VITA) ---
   Nombre varchar(100)
   Apellido varchar(100)
   FotoUrl varchar(255)
@@ -91,7 +91,7 @@ Table AspNetUserRoles {
 // -----------------------------------------------------------------------------
 // 2. PERMISOS VITA (opcionales / granulares)
 //    Complementan Identity; no sustituyen AspNetRoles / AspNetUserRoles.
-//    Incluir en migración solo si el producto exige permisos más finos que
+//    Incluir en migraci├│n solo si el producto exige permisos m├ís finos que
 //    Admin | Instructor | Estudiante.
 // -----------------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ Table rol_permisos {
 
 
 // -----------------------------------------------------------------------------
-// 3. CATÁLOGOS (lookups)
+// 3. CAT├üLOGOS (lookups)
 //    Tablas de referencia para cursos, lecciones e inscripciones.
 // -----------------------------------------------------------------------------
 
@@ -161,13 +161,13 @@ Table estados_inscripcion {
 
 // -----------------------------------------------------------------------------
 // 4. CURSOS
-//    id_instructor → AspNetUsers.Id (string / GUID Identity)
+//    id_instructor ÔåÆ AspNetUsers.Id (string / GUID Identity)
 // -----------------------------------------------------------------------------
 
 Table cursos {
   id_curso int [pk, increment]
 
-  // FK → AspNetUsers.Id
+  // FK ÔåÆ AspNetUsers.Id
   id_instructor varchar(450) [not null]
 
   id_categoria int [not null]
@@ -188,7 +188,7 @@ Table cursos {
 
 // -----------------------------------------------------------------------------
 // 5. LECCIONES
-//    Pertenecen a un curso; orden único por curso.
+//    Pertenecen a un curso; orden ├║nico por curso.
 // -----------------------------------------------------------------------------
 
 Table lecciones {
@@ -214,14 +214,14 @@ Table lecciones {
 
 // -----------------------------------------------------------------------------
 // 6. INSCRIPCIONES
-//    id_estudiante → AspNetUsers.Id (string / GUID Identity)
+//    id_estudiante ÔåÆ AspNetUsers.Id (string / GUID Identity)
 //    Un estudiante no puede inscribirse dos veces al mismo curso.
 // -----------------------------------------------------------------------------
 
 Table inscripciones {
   id_inscripcion int [pk, increment]
 
-  // FK → AspNetUsers.Id
+  // FK ÔåÆ AspNetUsers.Id
   id_estudiante varchar(450) [not null]
 
   id_curso int [not null]
@@ -237,14 +237,14 @@ Table inscripciones {
 
 // -----------------------------------------------------------------------------
 // 7. PROGRESO DE LECCIONES
-//    id_estudiante → AspNetUsers.Id (string / GUID Identity)
-//    Un registro por estudiante y lección.
+//    id_estudiante ÔåÆ AspNetUsers.Id (string / GUID Identity)
+//    Un registro por estudiante y lecci├│n.
 // -----------------------------------------------------------------------------
 
 Table progreso_lecciones {
   id_progreso int [pk, increment]
 
-  // FK → AspNetUsers.Id
+  // FK ÔåÆ AspNetUsers.Id
   id_estudiante varchar(450) [not null]
 
   id_leccion int [not null]
@@ -264,7 +264,7 @@ Table progreso_lecciones {
 
 
 // -----------------------------------------------------------------------------
-// A. Identity (usuarios ↔ roles) + permisos granulares VITA
+// A. Identity (usuarios Ôåö roles) + permisos granulares VITA
 // -----------------------------------------------------------------------------
 
 Ref: AspNetUserRoles.UserId > AspNetUsers.Id
@@ -275,7 +275,7 @@ Ref: rol_permisos.id_permiso > permisos.id_permiso
 
 
 // -----------------------------------------------------------------------------
-// B. Dominio VITA → Identity (FK string hacia AspNetUsers.Id)
+// B. Dominio VITA ÔåÆ Identity (FK string hacia AspNetUsers.Id)
 // -----------------------------------------------------------------------------
 
 Ref: cursos.id_instructor > AspNetUsers.Id
@@ -286,7 +286,7 @@ Ref: progreso_lecciones.id_estudiante > AspNetUsers.Id
 
 
 // -----------------------------------------------------------------------------
-// C. Dominio VITA (catálogos, cursos, lecciones, inscripciones, progreso)
+// C. Dominio VITA (cat├ílogos, cursos, lecciones, inscripciones, progreso)
 // -----------------------------------------------------------------------------
 
 Ref: cursos.id_categoria > categorias.id_categoria
