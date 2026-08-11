@@ -140,17 +140,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-// ===== ACTIVAR CORS ANTES DE AUTH =====
+// CORS antes de HTTPS redirect y de auth (preflight OPTIONS en local)
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("AllowReactApp");
 }
-// ======================================
 
-app.UseAuthentication();   // primero autentica (¿quién eres?)
-app.UseAuthorization();    // luego autoriza (¿puedes hacerlo?)
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
