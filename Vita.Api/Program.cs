@@ -119,6 +119,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ICourseOwnershipRepository, CourseOwnershipRepository>();
 builder.Services.AddScoped<ICourseOwnershipService, CourseOwnershipService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
