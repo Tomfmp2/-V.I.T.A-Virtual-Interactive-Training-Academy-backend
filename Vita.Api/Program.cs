@@ -56,8 +56,30 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen( options =>
-{   
+
+// ===== CORS SOLO PARA DESARROLLO =====
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowReactApp", policy =>
+        {
+            policy.SetIsOriginAllowed(origin =>
+            {
+                if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                    return false;
+
+                return uri.Host is "localhost" or "127.0.0.1";
+            })
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+        });
+    });
+}
+// ====================================
+
+builder.Services.AddSwaggerGen(options =>
+{
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -67,6 +89,7 @@ builder.Services.AddSwaggerGen( options =>
         In = ParameterLocation.Header,
         Description = "Pega tu token JWT (Swagger le agrega 'Bearer ' solo)."
     });
+
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
         {
@@ -75,6 +98,7 @@ builder.Services.AddSwaggerGen( options =>
         }
     });
 });
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
@@ -100,8 +124,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ===== ACTIVAR CORS ANTES DE AUTH =====
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowReactApp");
+}
+// ======================================
+
 app.UseAuthentication();   // primero autentica (¿quién eres?)
 app.UseAuthorization();    // luego autoriza (¿puedes hacerlo?)
+
 app.MapControllers();
 
 app.Run();
