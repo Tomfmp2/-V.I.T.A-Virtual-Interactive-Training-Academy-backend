@@ -29,9 +29,10 @@ public class LoginResult
     public LoginResponse? Response { get; set; }
 }
 
-
 public interface IAuthService
 {
     Task<RegisterResult> RegisterAsync(RegisterRequest request);
     Task<LoginResult> LoginAsync(LoginRequest request);
+    Task<MeResponse?> GetMeAsync(string userId);
+
 }

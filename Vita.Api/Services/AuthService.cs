@@ -133,4 +133,29 @@ public class AuthService : IAuthService
 
         return (new JwtSecurityTokenHandler().WriteToken(token), expiraEn);
     }
+
+    public async Task<MeResponse?> GetMeAsync(string userId)
+    {
+        // Se busca el usuario por el Id(el que trae el claim sub del token)
+        var usuario = await _userManager.FindByIdAsync(userId);
+        // Si usuario no existe return null
+        if (usuario is null)
+            return null;
+            // Saca roles para anadirlo en la respuesta
+        var roles = await _userManager.GetRolesAsync(usuario);
+        var rol = roles.FirstOrDefault() ?? "Estudiante";
+
+        return new MeResponse
+        {
+            Id = usuario.Id,
+            Nombre = usuario.Nombre,
+            Email = usuario.Email!,
+            Rol = rol,
+            Activo = usuario.Activo
+        };
+    } 
+
+
+
+
 }
