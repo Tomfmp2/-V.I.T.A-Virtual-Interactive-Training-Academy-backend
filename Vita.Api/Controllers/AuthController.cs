@@ -24,7 +24,20 @@ public class AuthController : ControllerBase
         {
           RegisterStatus.EmailExist => Conflict(new {error = "El Email ya esta registrado."}),
           RegisterStatus.ValidationError => BadRequest(new { errors = result.Errors}),
-          _                              => StatusCode(StatusCodes.Status201Created, result.Response)  
+          _                              => StatusCode(StatusCodes.Status201Created, result.Response)
+        };
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var result = await _authService.LoginAsync(request);
+
+        return result.Status switch
+        {
+            LoginStatus.InvalidCredentials => Unauthorized(new { error = "Credenciales inválidas." }),
+            LoginStatus.Inactive           => StatusCode(StatusCodes.Status403Forbidden, new { error = "Usuario inactivo." }),
+            _                              => Ok(result.Response)
         };
     }
 }
