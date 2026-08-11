@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Vita.Api.Data;
 using Vita.Api.Entities;
+using Vita.Api.Repositories;
 using Vita.Api.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
@@ -115,6 +116,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<ICourseOwnershipRepository, CourseOwnershipRepository>();
+builder.Services.AddScoped<ICourseOwnershipService, CourseOwnershipService>();
 
 var app = builder.Build();
 
