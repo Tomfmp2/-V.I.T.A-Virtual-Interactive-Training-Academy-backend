@@ -97,14 +97,67 @@ El puerto puede variar según `Properties/launchSettings.json`.
 
 ## Variables / configuración
 
-Pendiente de completar al implementar:
+CORS hacia el frontend (`http://localhost:5173`) — pendiente
 
-- Connection string de PostgreSQL
-- Clave de firma JWT
-- Políticas de Identity
-- CORS hacia el frontend (`http://localhost:5173`)
 
-No commitear secretos. Usar `appsettings.Development.json` (local) o user-secrets.
+## Configuración local
+
+Para ejecutar el API necesitas configurar localmente:
+
+- La cadena de conexión: `ConnectionStrings:Default`
+- La clave JWT: `Jwt:Key`
+- Las contraseñas de los usuarios demo, descritas abajo
+
+No subas secretos ni archivos de configuración local al repositorio. Usa User Secrets o variables de entorno.
+
+## Seeds de desarrollo
+
+En entorno `Development`, el API ejecuta las migraciones y luego crea datos de prueba si todavía no existen:
+
+- Roles: `Admin`, `Instructor` y `Estudiante`
+- Usuarios demo:
+  - `admin@vita.local`
+  - `instructor@vita.local`
+  - `estudiante@vita.local`
+- Catálogos, niveles y categorías de ejemplo
+
+El seed es idempotente: puedes reiniciar el API sin que se dupliquen los registros.
+
+### Configurar contraseñas demo
+
+Desde la carpeta `Vita.Api`, configura las contraseñas con User Secrets:
+
+```bash
+dotnet user-secrets set "Seeds:DemoUsers:AdminPassword" "<password-admin>"
+dotnet user-secrets set "Seeds:DemoUsers:InstructorPassword" "<password-instructor>"
+dotnet user-secrets set "Seeds:DemoUsers:StudentPassword" "<password-student>"
+```
+
+También puedes usar variables de entorno:
+
+```powershell
+$env:Seeds__DemoUsers__AdminPassword = "<password-admin>"
+$env:Seeds__DemoUsers__InstructorPassword = "<password-instructor>"
+$env:Seeds__DemoUsers__StudentPassword = "<password-student>"
+```
+
+Si falta alguna de estas variables, el API mostrará un error indicando cuál debes configurar.
+
+### Reiniciar los datos locales
+
+Para empezar desde cero, elimina la base de datos local y ejecuta el API nuevamente.
+
+Desde la raíz del repositorio:
+
+```bash
+dotnet run --project Vita.Api
+```
+
+O, si ya estás dentro de la carpeta `Vita.Api`:
+
+```bash
+dotnet run
+```
 
 ## Equipo
 
