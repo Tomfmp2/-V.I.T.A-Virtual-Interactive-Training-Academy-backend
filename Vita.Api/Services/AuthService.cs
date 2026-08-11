@@ -35,6 +35,7 @@ public class AuthService : IAuthService
             UserName = request.Email,
             Email = request.Email,
             Nombre = request.Nombre,
+            Apellido = request.Apellido,
             Activo = true
         };
 
@@ -57,6 +58,7 @@ public class AuthService : IAuthService
             {
                 Id = usuario.Id,
                 Nombre = usuario.Nombre,
+                Apellido = usuario.Apellido,
                 Email = usuario.Email,
                 Rol = "Estudiante",
                 Activo = usuario.Activo
@@ -100,6 +102,7 @@ public class AuthService : IAuthService
                 {
                     Id = usuario.Id,
                     Nombre = usuario.Nombre,
+                    Apellido = usuario.Apellido,
                     Email = usuario.Email!,
                     Rol = rol
                 }
@@ -149,6 +152,7 @@ public class AuthService : IAuthService
         {
             Id = usuario.Id,
             Nombre = usuario.Nombre,
+            Apellido = usuario.Apellido,
             Email = usuario.Email!,
             Rol = rol,
             Activo = usuario.Activo

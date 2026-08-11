@@ -7,6 +7,9 @@ public class RegisterRequest {
     [StringLength(100, MinimumLength =3)]
     public string Nombre { get; set; } = string.Empty;
     [Required]
+    [StringLength(255, MinimumLength =3)]
+    public string Apellido { get; set; } = string.Empty;
+    [Required]
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
     [Required]
