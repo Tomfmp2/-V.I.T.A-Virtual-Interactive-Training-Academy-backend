@@ -149,7 +149,7 @@ public class AuthService : IAuthService
         {
             Id = usuario.Id,
             Nombre = usuario.Nombre,
-            Email = usuario.Email,
+            Email = usuario.Email!,
             Rol = rol,
             Activo = usuario.Activo
         };
