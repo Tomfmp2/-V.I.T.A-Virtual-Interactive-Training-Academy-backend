@@ -8,6 +8,8 @@ using Vita.Api.Data;
 using Vita.Api.Entities;
 using Vita.Api.Services;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
+using Vita.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +56,20 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var mensaje = context.ModelState
+                .Where(kv => kv.Value?.Errors.Count > 0)
+                .SelectMany(kv => kv.Value!.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault() ?? "Datos inválidos.";
+
+            return new BadRequestObjectResult(new { error = mensaje, statusCode = 400 });
+        };
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 // ===== CORS SOLO PARA DESARROLLO =====
@@ -116,6 +131,8 @@ using (var scope = app.Services.CreateScope())
         await DbSeeder.SeedAsync(services);
     }
 }
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
