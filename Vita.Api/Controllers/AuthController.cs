@@ -8,7 +8,7 @@ namespace Vita.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
 
@@ -24,8 +24,8 @@ public class AuthController : ControllerBase
 
         return result.Status switch
         {
-          RegisterStatus.EmailExist => Conflict(new {error = "El Email ya esta registrado."}),
-          RegisterStatus.ValidationError => BadRequest(new { errors = result.Errors}),
+          RegisterStatus.EmailExist => ApiError(409, "El email ya está registrado."),
+          RegisterStatus.ValidationError => ApiError(400, string.Join(" ", result.Errors)),
           _                              => StatusCode(StatusCodes.Status201Created, result.Response)
         };
     }
@@ -37,8 +37,8 @@ public class AuthController : ControllerBase
 
         return result.Status switch
         {
-            LoginStatus.InvalidCredentials => Unauthorized(new { error = "Credenciales inválidas." }),
-            LoginStatus.Inactive           => StatusCode(StatusCodes.Status403Forbidden, new { error = "Usuario inactivo." }),
+            LoginStatus.InvalidCredentials => ApiError(401, "Credenciales inválidas."),
+            LoginStatus.Inactive           => ApiError(403, "Usuario inactivo."),
             _                              => Ok(result.Response)
         };
     }
@@ -53,11 +53,11 @@ public class AuthController : ControllerBase
                         ?? User.FindFirstValue("sub"); // y este se lee como respaldo "sub"
         
         if (userId is null)
-            return Unauthorized();
+            return ApiError(401, "No autorizado.");
 
         var me = await _authService.GetMeAsync(userId);
         if ( me is null)
-            return Unauthorized();
+             return ApiError(401, "No autorizado.");
         return Ok(me);
     }
 
