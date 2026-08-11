@@ -94,24 +94,17 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-// Crea las tablas y siembra roles
+// Aplica migraciones; seed de desarrollo solo en Development
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    //  Aplica migraciones (crea las tablas)
     var db = services.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 
-    //  Siembra los roles base si no existen
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roles = { "Admin", "Instructor", "Estudiante" };
-    foreach (var rol in roles)
+    if (app.Environment.IsDevelopment())
     {
-        if (!await roleManager.RoleExistsAsync(rol))
-        {
-            await roleManager.CreateAsync(new IdentityRole(rol));
-        }
+        await DbSeeder.SeedAsync(services);
     }
 }
 

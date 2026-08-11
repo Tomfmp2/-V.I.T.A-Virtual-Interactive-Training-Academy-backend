@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Vita.Api</RootNamespace>
     <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+    <UserSecretsId>vita-api-local-dev-secrets</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
