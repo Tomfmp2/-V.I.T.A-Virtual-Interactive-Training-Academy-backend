@@ -124,6 +124,7 @@ builder.Services.AddScoped<ICourseOwnershipRepository, CourseOwnershipRepository
 builder.Services.AddScoped<ICourseOwnershipService, CourseOwnershipService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<ILessonService, LessonService>();
 
 var app = builder.Build();
 
