@@ -21,6 +21,9 @@
     .\setup-dev.ps1 -PsqlPath "C:\Program Files\PostgreSQL\18\bin\psql.exe"
 
 .EXAMPLE
+    .\setup-dev.ps1 -SuperUser "admin_pg"
+
+.EXAMPLE
     .\setup-dev.ps1 -Force
 #>
 [CmdletBinding()]
@@ -29,6 +32,7 @@ param(
     [switch]$SkipSecrets,
     [switch]$NoRun,
     [string]$PsqlPath,
+    [string]$SuperUser,
     [switch]$Force
 )
 
@@ -117,7 +121,7 @@ catch {
 # --- d) base de datos ---
 if (-not $SkipDatabase) {
     Write-Host "[1/3] Base de datos (academia_cursos / vita_user)..." -ForegroundColor Cyan
-    Write-Warning "Se va a ELIMINAR la base academia_cursos y el rol vita_user. Se perderán TODOS los datos locales."
+    Write-Warning "Se va a ELIMINAR y recrear la base academia_cursos. Se perderan TODOS los datos locales de esa base. El rol vita_user y otras bases no se tocan."
 
     $confirm = Read-Host "Escribe SI (en mayúsculas) para continuar"
     if ($confirm -cne "SI") {
@@ -125,25 +129,35 @@ if (-not $SkipDatabase) {
         exit 1
     }
 
-    $pgSecure = Read-Host "Contraseña del rol postgres" -AsSecureString
+    if (-not $SuperUser) {
+        $inputUser = Read-Host "Rol superusuario de PostgreSQL [postgres]"
+        if ([string]::IsNullOrWhiteSpace($inputUser)) {
+            $SuperUser = "postgres"
+        }
+        else {
+            $SuperUser = $inputUser.Trim()
+        }
+    }
+
+    $pgSecure = Read-Host "Contraseña del rol $SuperUser" -AsSecureString
     $env:PGPASSWORD = ConvertFrom-SecureStringPlain -Secure $pgSecure
 
     try {
         Write-Host "  Ejecutando setup-local-01-crear-base.sql..."
-        & $psql -U postgres -h localhost -d postgres -v ON_ERROR_STOP=1 -f "DB/setup-local-01-crear-base.sql"
+        & $psql -U $SuperUser -h localhost -d postgres -v ON_ERROR_STOP=1 -f "DB/setup-local-01-crear-base.sql"
         if ($LASTEXITCODE -ne 0) {
             throw "Falló el script DB/setup-local-01-crear-base.sql (exit $LASTEXITCODE). Ver docs/EJECUTAR-EL-BACKEND.md (solución de problemas)."
         }
 
         Write-Host "  Ejecutando setup-local-02-permisos.sql..."
-        & $psql -U postgres -h localhost -d academia_cursos -v ON_ERROR_STOP=1 -f "DB/setup-local-02-permisos.sql"
+        & $psql -U $SuperUser -h localhost -d academia_cursos -v ON_ERROR_STOP=1 -f "DB/setup-local-02-permisos.sql"
         if ($LASTEXITCODE -ne 0) {
             throw "Falló el script DB/setup-local-02-permisos.sql (exit $LASTEXITCODE). Ver docs/EJECUTAR-EL-BACKEND.md (solución de problemas)."
         }
 
         Write-Host "  Verificando permisos de vita_user sobre el esquema public..."
         $sqlCheck = "SELECT has_schema_privilege('vita_user','public','CREATE') AND has_schema_privilege('vita_user','public','USAGE');"
-        $check = (& $psql -U postgres -h localhost -d academia_cursos -t -A -c $sqlCheck | Out-String).Trim()
+        $check = (& $psql -U $SuperUser -h localhost -d academia_cursos -t -A -c $sqlCheck | Out-String).Trim()
         if ($LASTEXITCODE -ne 0 -or $check -ne "t") {
             throw "vita_user no tiene permisos CREATE/USAGE sobre el esquema public (resultado: '$check'). El paso 02 no surtio efecto. Ver docs/EJECUTAR-EL-BACKEND.md (solucion de problemas)."
         }

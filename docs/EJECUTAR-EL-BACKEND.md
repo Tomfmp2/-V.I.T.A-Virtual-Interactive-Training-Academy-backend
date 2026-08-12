@@ -38,6 +38,13 @@ Ten a mano antes de empezar:
 - Contraseña del rol `postgres` (la definiste al instalar PostgreSQL)
 - Tres contraseñas de usuarios demo (tarjeta Trello **Seeds en el API**)
 
+El script **no modifica `appsettings.Development.json`** y no hace falta
+editarlo. La contraseña del superusuario solo se usa para la conexión
+administrativa del momento y no se guarda en ningún archivo. El script 01
+fija la contraseña de `vita_user` en `1234`, que es exactamente la que ya
+está en `appsettings.Development.json`, así que ambos lados quedan
+alineados sin intervención manual.
+
 ## Ruta manual (paso a paso)
 
 Misma secuencia que el script, sin automatizar.
@@ -56,6 +63,9 @@ $env:Path += ";C:\Program Files\PostgreSQL\18\bin"
 psql -U postgres -h localhost -d postgres -f DB/setup-local-01-crear-base.sql
 psql -U postgres -h localhost -d academia_cursos -f DB/setup-local-02-permisos.sql
 ```
+
+Si tu superusuario no se llama `postgres`, cambia `-U postgres` por tu rol
+en ambos comandos.
 
 `psql` sin `-U` ni `-d` intenta conectarse con el usuario de Windows y falla. Siempre pasa ambos.
 
@@ -110,7 +120,8 @@ ORDER BY tablename;
 | `Falta la contraseña de seed 'Seeds:DemoUsers:AdminPassword'` | Faltan User Secrets. Repite el paso 2 (o `.\setup-dev.ps1` sin `-SkipSecrets`). |
 | `no se puede eliminar la base de datos actual` | Estás conectado a `academia_cursos` en el paso 01. Conéctate a `postgres` (`-d postgres`). |
 | `la base de datos está siendo utilizada por otros usuarios` | Detén el API (Ctrl+C) y cierra conexiones de DBeaver. Vuelve a ejecutar el paso 01. |
-| `no se puede eliminar el rol «vita_user» porque está siendo usado` | Quedan sesiones o la base aún existe. Cierra clientes, termina el API y reintenta el paso 01 desde `postgres`. |
+| `no se puede eliminar el rol «vita_user» porque otros objetos dependen de él` | Versión antigua del script 01. Actualiza la rama: el script ya no elimina el rol. |
+| `autentificación password falló para el usuario «postgres»` | Contraseña del superusuario incorrecta, o tu superusuario se llama distinto. Usa `.\setup-dev.ps1 -SuperUser "<tu-rol>"`. |
 | `DROP DATABASE cannot run inside a transaction block` | En DBeaver: pon la conexión en **Auto** (no Manual Commit) y ejecuta con **Alt+X**. |
 | `psql` no se reconoce como comando | Agrégalo al PATH (ver paso 1) o pasa `-PsqlPath` a `setup-dev.ps1`. |
 | autentificación password falló para el usuario «<usuario-windows>» | Faltó `-U postgres`. Siempre usa `-U` y `-d`. |
