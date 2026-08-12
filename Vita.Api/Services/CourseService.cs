@@ -33,8 +33,8 @@ public class CourseService : ICourseService
         }
         else if (role == "Instructor")
         {
-            query = query.Where(c =>
-                c.EstadoCurso.Nombre == "Publicado" || c.IdInstructor == userId);
+            // Tarjeta: Instructor solo ve los suyos (borrador + publicado)
+            query = query.Where(c => c.IdInstructor == userId);
         }
         else
         {
@@ -61,9 +61,12 @@ public class CourseService : ICourseService
         if (curso is null)
             return null;
 
-        var visible = role == "Admin"
-            || curso.EstadoCurso.Nombre == "Publicado"
-            || (role == "Instructor" && curso.IdInstructor == userId);
+        var visible = role switch
+        {
+            "Admin" => true,
+            "Instructor" => curso.IdInstructor == userId,
+            _ => curso.EstadoCurso.Nombre == "Publicado"
+        };
 
         // Si existe pero no es visible → null (404, no 403) para no filtrar existencia
         return visible ? MapToResponse(curso) : null;
@@ -204,18 +207,12 @@ public class CourseService : ICourseService
         if (tieneInscripciones)
             return new CourseResult { Outcome = CourseOutcome.HasEnrollments };
 
+        var tieneLecciones = await _db.Lecciones.AnyAsync(l => l.IdCurso == id);
+        if (tieneLecciones)
+            return new CourseResult { Outcome = CourseOutcome.HasLessons };
+
         _db.Cursos.Remove(curso);
-        try
-        {
-            // FK lecciones → cursos es DeleteBehavior.Restrict: un curso con lecciones
-            // fallaría con DbUpdateException. No borramos las lecciones aquí; esa regla
-            // de negocio la define el módulo de lecciones.
-            await _db.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            return new CourseResult { Outcome = CourseOutcome.HasEnrollments };
-        }
+        await _db.SaveChangesAsync();
 
         return new CourseResult { Outcome = CourseOutcome.Success };
     }
