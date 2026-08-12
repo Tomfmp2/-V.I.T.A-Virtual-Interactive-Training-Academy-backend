@@ -11,6 +11,16 @@ using Vita.Api.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
 using Vita.Api.Middleware;
+using DotNetEnv;
+
+// Carga variables desde un archivo .env (solo existe en máquinas de desarrollo).
+// Se cargan como variables de entorno ANTES de construir la configuración, para que
+// ASP.NET Core las lea. En la jerarquía de config, las env vars ganan sobre los JSON.
+var envDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+while (envDir is not null && !File.Exists(Path.Combine(envDir.FullName, ".env")))
+    envDir = envDir.Parent;
+if (envDir is not null)
+    Env.Load(Path.Combine(envDir.FullName, ".env"));
 
 var builder = WebApplication.CreateBuilder(args);
 
