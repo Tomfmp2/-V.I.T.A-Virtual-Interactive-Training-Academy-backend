@@ -42,6 +42,8 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
+        // Conserva el claim "role" tal como lo emite AuthService (sin remapear a URI largas)
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -51,7 +53,8 @@ builder.Services
             ValidIssuer = jwt["Issuer"],
             ValidAudience = jwt["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!))
+                Encoding.UTF8.GetBytes(jwt["Key"]!)),
+            RoleClaimType = "role"
         };
     });
 
@@ -120,6 +123,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ICourseOwnershipRepository, CourseOwnershipRepository>();
 builder.Services.AddScoped<ICourseOwnershipService, CourseOwnershipService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 
 var app = builder.Build();
 
