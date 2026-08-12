@@ -1,8 +1,11 @@
 # Configurar seeds locales (cada PC)
 
-Guía del repositorio. **No incluye las contraseñas reales** (están en la tarjeta Trello de Seeds y en el doc interno del equipo).
+> **Vía oficial actual:** configura connection string, JWT y passwords de seed en un archivo `.env`.  
+> Guía paso a paso: [`docs/Configurar-env-local.md`](Configurar-env-local.md).
 
-El API, en `Development`, tras `Database.Migrate()`, crea roles, usuarios demo y catálogos. Para hashear las passwords de `admin@vita.local`, `instructor@vita.local` y `estudiante@vita.local` necesita tres secretos **en esa máquina**.
+Esta página deja el método anterior con **User Secrets** (opcional / respaldo). **No incluye las contraseñas reales** (tarjeta Trello de Seeds / doc interno del equipo).
+
+El API, en `Development`, tras `Database.Migrate()`, crea roles, usuarios demo y catálogos. Para hashear las passwords de `admin@vita.local`, `instructor@vita.local` y `estudiante@vita.local` necesita las tres claves `Seeds:DemoUsers:*Password` (vía `.env` o User Secrets).
 
 ## Por qué
 
@@ -12,9 +15,13 @@ Sin estos secretos:
 Falta la contraseña de seed 'Seeds:DemoUsers:AdminPassword'
 ```
 
-Git **no** distribuye User Secrets. Cada clone / cada PC = configurar una vez.
+Git **no** distribuye `.env` ni User Secrets. Cada clone / cada PC = configurar una vez.
 
-## Pasos (PowerShell)
+## Método recomendado: `.env`
+
+Ver **[Configurar-env-local.md](Configurar-env-local.md)** (copiar `.env.example` → `.env` y completar valores).
+
+## Alternativa: User Secrets (PowerShell)
 
 ```powershell
 cd <ruta-del-repo>\Vita.Api
@@ -31,8 +38,10 @@ dotnet run --project Vita.Api
 
 Valores de `<password-*>`: tarjeta Trello **Seeds en el API**.
 
+> Si también tienes `.env`, las variables de entorno del `.env` suelen **ganar** sobre User Secrets.
+
 ## Reset
 
-Borrar la BD local → confirmar secretos → `dotnet run --project Vita.Api`.
+Borrar la BD local → confirmar `.env` (o secretos) → `dotnet run --project Vita.Api`.
 
 Más detalle (con credenciales de equipo): `Instrucciones Equipo / Seeds-User-Secrets-paso-a-paso.md` en el vault del líder.
