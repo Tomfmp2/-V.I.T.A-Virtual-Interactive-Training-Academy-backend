@@ -133,6 +133,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ICourseOwnershipRepository, CourseOwnershipRepository>();
 builder.Services.AddScoped<ICourseOwnershipService, CourseOwnershipService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ILevelService, LevelService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<ILessonService, LessonService>();

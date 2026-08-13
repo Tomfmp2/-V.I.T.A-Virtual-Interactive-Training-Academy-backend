@@ -5,7 +5,7 @@ namespace Vita.Api.Services;
 public enum CourseOutcome
 {
     Success, NotFound, Forbidden, CategoryNotFound, NivelNotFound,
-    TituloExists, InvalidEstado, HasEnrollments, HasLessons
+    TituloExists, InvalidEstado, InvalidInstructor, HasEnrollments, HasLessons
 }
 
 public class CourseResult
@@ -20,7 +20,8 @@ public interface ICourseService
     Task<CourseResponse?> GetByIdAsync(int id, string userId, string role);
     Task<List<CourseListItemResponse>> GetMineAsync(string userId);
     Task<CourseResult> CreateAsync(CourseCreateRequest request, string instructorId);
-    Task<CourseResult> UpdateAsync(int id, CourseUpdateRequest request, string userId);
-    Task<CourseResult> ChangeStatusAsync(int id, CourseStatusRequest request, string userId);
+    Task<CourseResult> CreateForAdminAsync(CourseAdminCreateRequest request);
+    Task<CourseResult> UpdateAsync(int id, CourseUpdateRequest request, string userId, string role);
+    Task<CourseResult> ChangeStatusAsync(int id, CourseStatusRequest request, string userId, string role);
     Task<CourseResult> DeleteAsync(int id, string userId, string role);
 }
