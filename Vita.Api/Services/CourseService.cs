@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Vita.Api.Common;
 using Vita.Api.Data;
@@ -10,11 +11,16 @@ public class CourseService : ICourseService
 {
     private readonly ApplicationDbContext _db;
     private readonly ICourseOwnershipService _ownership;
+    private readonly UserManager<Usuario> _userManager;
 
-    public CourseService(ApplicationDbContext db, ICourseOwnershipService ownership)
+    public CourseService(
+        ApplicationDbContext db,
+        ICourseOwnershipService ownership,
+        UserManager<Usuario> userManager)
     {
         _db = db;
         _ownership = ownership;
+        _userManager = userManager;
     }
 
     public async Task<List<CourseListItemResponse>> GetAllAsync(string userId, string role)
@@ -126,13 +132,31 @@ public class CourseService : ICourseService
         return new CourseResult { Outcome = CourseOutcome.Success, Course = MapToResponse(created!) };
     }
 
-    public async Task<CourseResult> UpdateAsync(int id, CourseUpdateRequest request, string userId)
+    public async Task<CourseResult> CreateForAdminAsync(CourseAdminCreateRequest request)
+    {
+        var instructorId = request.IdInstructor?.Trim();
+        if (string.IsNullOrWhiteSpace(instructorId))
+            return new CourseResult { Outcome = CourseOutcome.InvalidInstructor };
+
+        var instructor = await _userManager.FindByIdAsync(instructorId);
+        if (instructor is null || !await _userManager.IsInRoleAsync(instructor, "Instructor"))
+            return new CourseResult { Outcome = CourseOutcome.InvalidInstructor };
+
+        return await CreateAsync(request, instructorId);
+    }
+
+    public async Task<CourseResult> UpdateAsync(
+        int id,
+        CourseUpdateRequest request,
+        string userId,
+        string role)
     {
         var curso = await _db.Cursos.FindAsync(id);
         if (curso is null)
             return new CourseResult { Outcome = CourseOutcome.NotFound };
 
-        if (!await _ownership.IsCourseOwnerAsync(userId, id))
+        var autorizado = role == "Admin" || await _ownership.IsCourseOwnerAsync(userId, id);
+        if (!autorizado)
             return new CourseResult { Outcome = CourseOutcome.Forbidden };
 
         var categoriaOk = await _db.Categorias
@@ -147,7 +171,7 @@ public class CourseService : ICourseService
         var titulo = request.Titulo.Trim();
         var tituloExiste = await _db.Cursos.AnyAsync(c =>
             c.IdCurso != id
-            && c.IdInstructor == userId
+            && c.IdInstructor == curso.IdInstructor
             && c.Titulo.ToLower() == titulo.ToLower());
         if (tituloExiste)
             return new CourseResult { Outcome = CourseOutcome.TituloExists };
@@ -170,7 +194,11 @@ public class CourseService : ICourseService
         return new CourseResult { Outcome = CourseOutcome.Success, Course = MapToResponse(updated!) };
     }
 
-    public async Task<CourseResult> ChangeStatusAsync(int id, CourseStatusRequest request, string userId)
+    public async Task<CourseResult> ChangeStatusAsync(
+        int id,
+        CourseStatusRequest request,
+        string userId,
+        string role)
     {
         var estado = request.Estado.Trim().ToLowerInvariant();
         if (estado is not ("borrador" or "publicado"))
@@ -180,7 +208,8 @@ public class CourseService : ICourseService
         if (curso is null)
             return new CourseResult { Outcome = CourseOutcome.NotFound };
 
-        if (!await _ownership.IsCourseOwnerAsync(userId, id))
+        var autorizado = role == "Admin" || await _ownership.IsCourseOwnerAsync(userId, id);
+        if (!autorizado)
             return new CourseResult { Outcome = CourseOutcome.Forbidden };
 
         var nombreEstado = estado == "borrador" ? "Borrador" : "Publicado";
