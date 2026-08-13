@@ -1,3 +1,5 @@
+> ⚠️ **Archivo legacy** — el contenido actualizado está en [`01-setup-local/probar-swagger.md`](01-setup-local/probar-swagger.md). Este archivo se conserva como referencia histórica.
+
 # Cómo probar la API en Swagger (con Bearer)
 
 Guía para probar los endpoints de autenticación desde la UI de Swagger, usando el botón **Authorize** con token JWT.

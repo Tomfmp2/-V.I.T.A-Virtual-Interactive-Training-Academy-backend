@@ -196,9 +196,13 @@ dotnet run --project Vita.Api
 - Merge a `main` solo por PR
 - Errores API: `{ "error": "...", "statusCode": 400 }`
 
-## Documentación de referencia
+## Documentación
 
-- Documentación backend (contrato de endpoints)
-- Script SQL / modelo ER
-- Requerimientos Proyecto 3
-- Guía seeds por PC: `docs/Configurar-seeds-locales.md`
+📖 **[docs/README.md](docs/README.md)** — índice completo de la documentación técnica.
+
+| Sección | Contenido |
+| --- | --- |
+| [docs/00-convenciones/](docs/00-convenciones/) | Contrato API y patrón de errores |
+| [docs/01-setup-local/](docs/01-setup-local/) | Configurar `.env`, seeds y Swagger |
+| [docs/02-modulos-api/](docs/02-modulos-api/) | Detalle de los 7 módulos implementados |
+| [docs/03-base-datos/](docs/03-base-datos/) | Modelo Identity, migraciones y Script SQL |
