@@ -27,13 +27,13 @@ No requiere body.
 **Response 200:**
 ```json
 [
-  { "id": "...", "name": "Admin", "normalizedName": "ADMIN" },
-  { "id": "...", "name": "Instructor", "normalizedName": "INSTRUCTOR" },
-  { "id": "...", "name": "Estudiante", "normalizedName": "ESTUDIANTE" }
+  { "id": "a1b2c3d4-...", "name": "Admin" },
+  { "id": "e5f6g7h8-...", "name": "Instructor" },
+  { "id": "i9j0k1l2-...", "name": "Estudiante" }
 ]
 ```
 
-> El shape exacto de la respuesta es el de `IdentityRole` de ASP.NET Core Identity. El frontend debe usar el campo `name` para mostrar o enviar roles.
+> El shape de la respuesta viene del `RoleDto` interno (`Id`, `Name`). El frontend debe usar el campo `name` para mostrar o enviar roles a otros endpoints.
 
 ---
 
@@ -66,4 +66,5 @@ No requiere body.
 
 - Controller: `Vita.Api/Controllers/RolesController.cs`
 - Service: `Vita.Api/Services/RoleService.cs` / `IRoleService.cs`
+- DTO: `Vita.Api/Dtos/Roles/RoleDto.cs` (`Id`, `Name`)
 - Seed: `Vita.Api/Data/DbSeeder.cs` (`SeedRolesAsync`)

@@ -15,12 +15,19 @@ El esquema se gestiona **siempre** con migraciones EF Core. `DB/Script.sql` es s
 
 ---
 
-## Cadena de migraciones actual (`develop`)
+## Cadena de migraciones activa (`develop`)
 
-| Migración | Contenido |
-| --- | --- |
-| `InitialIdentity` | Tablas de ASP.NET Core Identity (`AspNetUsers`, `AspNetRoles`, etc.) |
-| `AddDomainEntities` | Tablas de dominio VITA (cursos, lecciones, inscripciones, catálogos) |
+| Timestamp | Migración | Contenido |
+| --- | --- | --- |
+| `20260810155411` | `InitialIdentity` | Tablas de ASP.NET Core Identity: `AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, claims, tokens |
+| `20260810211253` | `AddDomainEntities` | Tablas de dominio VITA: `categorias`, `niveles`, `estados_curso`, `tipos_leccion`, `estados_inscripcion`, `cursos`, `lecciones`, `inscripciones` |
+
+Archivos en `Vita.Api/Migrations/`:
+```
+20260810155411_InitialIdentity.cs
+20260810211253_AddDomainEntities.cs
+ApplicationDbContextModelSnapshot.cs
+```
 
 Al arrancar el API, `Database.Migrate()` en `Program.cs` aplica automáticamente cualquier migración pendiente.
 

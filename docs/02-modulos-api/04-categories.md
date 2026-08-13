@@ -35,12 +35,8 @@
     "id": 1,
     "nombre": "Programación",
     "slug": "programacion",
-    "activo": true
-  },
-  {
-    "id": 2,
-    "nombre": "Diseño",
-    "slug": "diseno",
+    "descripcion": null,
+    "iconoUrl": null,
     "activo": true
   }
 ]
@@ -53,28 +49,33 @@
 **Request:**
 ```json
 {
-  "nombre": "Marketing Digital"
+  "nombre": "Marketing Digital",
+  "descripcion": "Estrategias y herramientas de marketing.",
+  "iconoUrl": "https://ejemplo.com/icono.png"
 }
 ```
 
 | Campo | Tipo | Validación |
 | --- | --- | --- |
-| `nombre` | `string` | Requerido, debe ser único |
+| `nombre` | `string` | Requerido, 3–60 caracteres, único |
+| `descripcion` | `string?` | Opcional, máx 250 caracteres |
+| `iconoUrl` | `string?` | Opcional, máx 255 caracteres |
 
-**Response 201:** objeto categoría creada.
+**Response 201:** objeto `CategoryResponse` de la categoría creada.
 
 ---
 
 ### `PUT /api/categories/{id}`
 
-**Request:**
+Mismo body que `POST`. **Response 200:** objeto `CategoryResponse` actualizado.
+
 ```json
 {
-  "nombre": "Marketing y Publicidad"
+  "nombre": "Marketing y Publicidad",
+  "descripcion": "Descripción actualizada.",
+  "iconoUrl": null
 }
 ```
-
-**Response 200:** objeto categoría actualizada.
 
 ---
 
@@ -119,4 +120,4 @@ No requiere body.
 
 - Controller: `Vita.Api/Controllers/CategoriesController.cs`
 - Service: `Vita.Api/Services/CategoryService.cs` / `ICategoryService.cs`
-- DTOs: `Vita.Api/Dtos/Categories/` (`CategoryRequest`)
+- DTOs: `Vita.Api/Dtos/Categories/` (`CategoryRequest`, `CategoryResponse`)

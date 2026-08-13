@@ -1,3 +1,5 @@
+> ⚠️ **Archivo legacy** — el contenido actualizado está en [`01-setup-local/configurar-seeds.md`](01-setup-local/configurar-seeds.md). Este archivo se conserva como referencia histórica.
+
 # Configurar seeds locales (cada PC)
 
 > **Vía oficial actual:** configura connection string, JWT y passwords de seed en un archivo `.env`.  

@@ -31,6 +31,8 @@
 
 ### `GET /api/courses`
 
+Devuelve `CourseListItemResponse[]` (vista resumida, no el detalle completo).
+
 **Response 200:**
 ```json
 [
@@ -39,13 +41,17 @@
     "titulo": "Introducción a Python",
     "slug": "introduccion-a-python",
     "descripcionCorta": "Aprende Python desde cero.",
+    "imagenPortadaUrl": null,
     "categoriaNombre": "Programación",
     "nivelNombre": "Principiante",
     "estado": "Publicado",
-    "instructorNombre": "Instructor Demo"
+    "instructorNombre": "Instructor Demo",
+    "createdAt": "2026-08-13T00:00:00Z"
   }
 ]
 ```
+
+> Para el objeto completo (con ids, descripción larga, etc.) usar `GET /api/courses/{id}`.
 
 ---
 

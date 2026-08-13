@@ -1,3 +1,5 @@
+> ⚠️ **Archivo legacy** — el contenido actualizado está en [`01-setup-local/configurar-env.md`](01-setup-local/configurar-env.md). Este archivo se conserva como referencia histórica.
+
 # Configurar `.env` local (Development)
 
 Guía paso a paso para que el backend VITA arranque en tu PC **sin** poner secretos en `appsettings.Development.json`.
