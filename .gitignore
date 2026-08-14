@@ -154,6 +154,11 @@ $RECYCLE.BIN/
 # -----------------------------------------------------------------------------
 # Miscelánea
 # -----------------------------------------------------------------------------
+# Fotos de perfil subidas por usuarios (solo en disco del servidor, no en git)
+Vita.Api/wwwroot/uploads/**/*
+!Vita.Api/wwwroot/uploads/**/
+!Vita.Api/wwwroot/uploads/**/.gitkeep
+
 *.swp
 *.swo
 *~
@@ -164,3 +169,6 @@ $RECYCLE.BIN/
 *.tmp
 mono_crash.*
 node_modules/
+
+
+appsettings.Development.json
