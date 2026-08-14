@@ -52,6 +52,8 @@
 | [`05-courses.md`](02-modulos-api/05-courses.md) | Cursos | ✅ Implementado |
 | [`06-lessons.md`](02-modulos-api/06-lessons.md) | Lecciones | ✅ Implementado |
 | [`07-enrollments.md`](02-modulos-api/07-enrollments.md) | Inscripciones | ✅ Implementado |
+| [`08-reports.md`](02-modulos-api/08-reports.md) | Reportes | ✅ Implementado |
+| [`09-levels.md`](02-modulos-api/09-levels.md) | Niveles | ✅ Implementado |
 
 ### 03 — Base de datos
 
@@ -67,7 +69,7 @@
 
 | | |
 | --- | --- |
-| **Rama** | `develop` |
+| **Rama** | `feature/reports-api` (merge pendiente a `develop`) |
 | **Fecha doc** | 13/08/2026 |
 | **URL local** | `http://localhost:5044` |
 | **Swagger** | `http://localhost:5044/swagger` |
@@ -75,10 +77,8 @@
 
 ## No implementado (fuera de alcance actual)
 
-- Módulo **Reportes**
-- **Progreso de lecciones** / completar lección
+- **Progreso de lecciones** / completar lección (opcional en el PDF)
 - `DELETE /api/enrollments/{id}` — cancelar inscripción
-
 ---
 
 ## Para contribuidores
