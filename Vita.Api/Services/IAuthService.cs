@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Vita.Api.Dtos.Auth;
 
 namespace Vita.Api.Services;
@@ -34,13 +35,18 @@ public enum ProfileOutcome
     Success,
     NotFound,
     Inactive,
-    ValidationError
+    ValidationError,
+    WrongPassword,
+    PasswordMismatch,
+    FileInvalid
 }
 
 public class ProfileResult
 {
     public ProfileOutcome Outcome { get; set; }
     public MeResponse? Profile { get; set; }
+    public UploadPhotoResponse? Photo { get; set; }
+    public string? Message { get; set; }
     public List<string> Errors { get; set; } = new();
 }
 
@@ -50,4 +56,6 @@ public interface IAuthService
     Task<LoginResult> LoginAsync(LoginRequest request);
     Task<MeResponse?> GetMeAsync(string userId);
     Task<ProfileResult> UpdateProfileAsync(string userId, UpdateProfileRequest request);
+    Task<ProfileResult> ChangePasswordAsync(string userId, ChangePasswordRequest request);
+    Task<ProfileResult> UploadPhotoAsync(string userId, IFormFile file);
 }

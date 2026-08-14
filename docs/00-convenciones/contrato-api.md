@@ -34,9 +34,13 @@
 | `POST` | `/api/auth/register` | Público | ✅ Implementado |
 | `POST` | `/api/auth/login` | Público | ✅ Implementado |
 | `GET` | `/api/auth/me` | Bearer (cualquier rol) | ✅ Implementado |
+| `PUT` | `/api/auth/me` | Bearer (cualquier rol) | ✅ Implementado |
+| `POST` | `/api/auth/change-password` | Bearer (cualquier rol) | ✅ Implementado |
+| `POST` | `/api/auth/me/photo` | Bearer (cualquier rol) | ✅ Implementado |
 | `POST` | `/api/auth/logout` | Bearer (cualquier rol) | ✅ Implementado |
 
-> **Nota:** Logout es *stateless*. El servidor responde 200 y el cliente debe borrar el token localmente.
+> **Nota:** Logout es *stateless*. El servidor responde 200 y el cliente debe borrar el token localmente.  
+> Perfil propio (teléfono, foto, contraseña): ver [`10-profile-settings.md`](../02-modulos-api/10-profile-settings.md).
 
 ---
 

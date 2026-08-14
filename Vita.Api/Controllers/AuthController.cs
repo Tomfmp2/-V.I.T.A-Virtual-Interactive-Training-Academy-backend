@@ -47,11 +47,7 @@ public class AuthController : BaseApiController
     [HttpGet("me")]
     public async Task<IActionResult> Me ()
     {
-        // userId llega en el claim "sub" del token
-        //Cuando se valida el JWT, "sub" mapea ClaimsType.NameIdentifier
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) // el claim sub ser renombra a ClaimsTypes.NameIdentifier por eso se lee primero este
-                        ?? User.FindFirstValue("sub"); // y este se lee como respaldo "sub"
-        
+        var userId = GetUserId();
         if (userId is null)
             return ApiError(401, "No autorizado.");
 
@@ -65,9 +61,7 @@ public class AuthController : BaseApiController
     [HttpPut("me")]
     public async Task<IActionResult> UpdateMe([FromBody] UpdateProfileRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                     ?? User.FindFirstValue("sub");
-
+        var userId = GetUserId();
         if (userId is null)
             return ApiError(401, "No autorizado.");
 
@@ -82,16 +76,56 @@ public class AuthController : BaseApiController
         };
     }
 
-    [Authorize] // exije un Bearer token valido. Si no lo trae ASP.NET responde 401
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var userId = GetUserId();
+        if (userId is null)
+            return ApiError(401, "No autorizado.");
+
+        var result = await _authService.ChangePasswordAsync(userId, request);
+
+        return result.Outcome switch
+        {
+            ProfileOutcome.NotFound => ApiError(401, "No autorizado."),
+            ProfileOutcome.Inactive => ApiError(403, "Usuario inactivo."),
+            ProfileOutcome.PasswordMismatch => ApiError(400, "Las contraseñas no coinciden."),
+            ProfileOutcome.WrongPassword => ApiError(401, "La contraseña actual es incorrecta."),
+            ProfileOutcome.ValidationError => ApiError(400, string.Join(" ", result.Errors)),
+            _ => Ok(new { message = result.Message })
+        };
+    }
+
+    [Authorize]
+    [HttpPost("me/photo")]
+    [RequestSizeLimit(2 * 1024 * 1024)]
+    public async Task<IActionResult> UploadPhoto(IFormFile file)
+    {
+        var userId = GetUserId();
+        if (userId is null)
+            return ApiError(401, "No autorizado.");
+
+        var result = await _authService.UploadPhotoAsync(userId, file);
+
+        return result.Outcome switch
+        {
+            ProfileOutcome.NotFound => ApiError(401, "No autorizado."),
+            ProfileOutcome.Inactive => ApiError(403, "Usuario inactivo."),
+            ProfileOutcome.FileInvalid => ApiError(400, string.Join(" ", result.Errors)),
+            ProfileOutcome.ValidationError => ApiError(400, string.Join(" ", result.Errors)),
+            _ => Ok(result.Photo)
+        };
+    }
+
+    [Authorize]
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        //Logout stateless: o sea el servidor No invalida el token, solo responde 200 ok
-        // el cliente (front) debe borrar el token de su almacenamiento
-        return Ok( new{ message = "Sesion cerrada" });
+        return Ok(new { message = "Sesion cerrada" });
     }
 
+    private string? GetUserId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier)
+        ?? User.FindFirstValue("sub");
 }
-
-
-

@@ -17,7 +17,12 @@
 | `POST` | `/api/auth/register` | Público | Registrar nuevo usuario (rol `Estudiante` por defecto) |
 | `POST` | `/api/auth/login` | Público | Autenticar y recibir JWT |
 | `GET` | `/api/auth/me` | Bearer · cualquier rol | Ver perfil del usuario autenticado |
+| `PUT` | `/api/auth/me` | Bearer · cualquier rol | Actualizar perfil propio |
+| `POST` | `/api/auth/change-password` | Bearer · cualquier rol | Cambiar contraseña |
+| `POST` | `/api/auth/me/photo` | Bearer · cualquier rol | Subir foto de perfil |
 | `POST` | `/api/auth/logout` | Bearer · cualquier rol | Cierre de sesión stateless |
+
+> Perfil extendido (teléfono, foto, contraseña): ver [`10-profile-settings.md`](10-profile-settings.md).
 
 ---
 

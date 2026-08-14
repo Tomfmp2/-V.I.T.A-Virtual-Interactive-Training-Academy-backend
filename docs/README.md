@@ -54,6 +54,7 @@
 | [`07-enrollments.md`](02-modulos-api/07-enrollments.md) | Inscripciones | ✅ Implementado |
 | [`08-reports.md`](02-modulos-api/08-reports.md) | Reportes | ✅ Implementado |
 | [`09-levels.md`](02-modulos-api/09-levels.md) | Niveles | ✅ Implementado |
+| [`10-profile-settings.md`](02-modulos-api/10-profile-settings.md) | Configuración de perfil | ✅ Implementado |
 
 ### 03 — Base de datos
 
@@ -79,13 +80,12 @@
 
 | Archivo | Descripción |
 | --- | --- |
-| [`planes/Plan-configuracion-perfil-backend.md`](planes/Plan-configuracion-perfil-backend.md) | Endpoints y conexiones para **Configuración de perfil** (foto, teléfono, cambio de contraseña) |
+| [`planes/Plan-configuracion-perfil-backend.md`](planes/Plan-configuracion-perfil-backend.md) | Plan original — **implementado** (ver módulo 10) |
 
 ---
 
 ## No implementado (fuera de alcance actual)
 
-- **Configuración de perfil** — ver plan [`planes/Plan-configuracion-perfil-backend.md`](planes/Plan-configuracion-perfil-backend.md)
 - **Progreso de lecciones** / completar lección (opcional en el PDF)
 - `DELETE /api/enrollments/{id}` — cancelar inscripción
 ---

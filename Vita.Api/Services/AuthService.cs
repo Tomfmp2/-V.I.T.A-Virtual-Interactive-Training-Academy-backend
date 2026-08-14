@@ -2,6 +2,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Vita.Api.Dtos.Auth;
@@ -11,13 +13,27 @@ namespace Vita.Api.Services;
  
 public class AuthService : IAuthService
 {
+    private const long MaxPhotoBytes = 2 * 1024 * 1024;
+
+    private static readonly Dictionary<string, string> AllowedPhotoTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["image/jpeg"] = ".jpg",
+        ["image/png"] = ".png",
+        ["image/webp"] = ".webp"
+    };
+
     private readonly UserManager<Usuario> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _environment;
 
-    public AuthService(UserManager<Usuario> userManager, IConfiguration configuration)
+    public AuthService(
+        UserManager<Usuario> userManager,
+        IConfiguration configuration,
+        IWebHostEnvironment environment)
     {
         _userManager = userManager;
         _configuration = configuration;
+        _environment = environment;
     }
     public async Task<RegisterResult> RegisterAsync(RegisterRequest request)
     {
@@ -185,6 +201,124 @@ public class AuthService : IAuthService
             Outcome = ProfileOutcome.Success,
             Profile = MapMe(usuario, rol)
         };
+    }
+
+    public async Task<ProfileResult> ChangePasswordAsync(string userId, ChangePasswordRequest request)
+    {
+        var usuario = await _userManager.FindByIdAsync(userId);
+        if (usuario is null)
+            return new ProfileResult { Outcome = ProfileOutcome.NotFound };
+
+        if (!usuario.Activo)
+            return new ProfileResult { Outcome = ProfileOutcome.Inactive };
+
+        if (request.NuevaContrasena != request.ConfirmarContrasena)
+            return new ProfileResult { Outcome = ProfileOutcome.PasswordMismatch };
+
+        var passwordOk = await _userManager.CheckPasswordAsync(usuario, request.ContrasenaActual);
+        if (!passwordOk)
+            return new ProfileResult { Outcome = ProfileOutcome.WrongPassword };
+
+        var result = await _userManager.ChangePasswordAsync(
+            usuario,
+            request.ContrasenaActual,
+            request.NuevaContrasena);
+
+        if (!result.Succeeded)
+        {
+            return new ProfileResult
+            {
+                Outcome = ProfileOutcome.ValidationError,
+                Errors = result.Errors.Select(e => e.Description).ToList()
+            };
+        }
+
+        return new ProfileResult
+        {
+            Outcome = ProfileOutcome.Success,
+            Message = "Contraseña actualizada correctamente."
+        };
+    }
+
+    public async Task<ProfileResult> UploadPhotoAsync(string userId, IFormFile file)
+    {
+        var usuario = await _userManager.FindByIdAsync(userId);
+        if (usuario is null)
+            return new ProfileResult { Outcome = ProfileOutcome.NotFound };
+
+        if (!usuario.Activo)
+            return new ProfileResult { Outcome = ProfileOutcome.Inactive };
+
+        if (file is null || file.Length == 0)
+        {
+            return new ProfileResult
+            {
+                Outcome = ProfileOutcome.FileInvalid,
+                Errors = ["Debes seleccionar una imagen."]
+            };
+        }
+
+        if (file.Length > MaxPhotoBytes)
+        {
+            return new ProfileResult
+            {
+                Outcome = ProfileOutcome.FileInvalid,
+                Errors = ["La imagen no puede superar 2 MB."]
+            };
+        }
+
+        if (!AllowedPhotoTypes.TryGetValue(file.ContentType, out var extension))
+        {
+            return new ProfileResult
+            {
+                Outcome = ProfileOutcome.FileInvalid,
+                Errors = ["Formato no permitido. Usa JPG, PNG o WEBP."]
+            };
+        }
+
+        var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+        var profilesDir = Path.Combine(webRoot, "uploads", "profiles");
+        Directory.CreateDirectory(profilesDir);
+
+        DeleteExistingPhotos(profilesDir, userId);
+
+        var fileName = $"{userId}{extension}";
+        var physicalPath = Path.Combine(profilesDir, fileName);
+        await using (var stream = new FileStream(physicalPath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var fotoUrl = $"/uploads/profiles/{fileName}";
+        usuario.FotoUrl = fotoUrl;
+
+        var update = await _userManager.UpdateAsync(usuario);
+        if (!update.Succeeded)
+        {
+            if (File.Exists(physicalPath))
+                File.Delete(physicalPath);
+
+            return new ProfileResult
+            {
+                Outcome = ProfileOutcome.ValidationError,
+                Errors = update.Errors.Select(e => e.Description).ToList()
+            };
+        }
+
+        return new ProfileResult
+        {
+            Outcome = ProfileOutcome.Success,
+            Photo = new UploadPhotoResponse { FotoUrl = fotoUrl }
+        };
+    }
+
+    private static void DeleteExistingPhotos(string profilesDir, string userId)
+    {
+        if (!Directory.Exists(profilesDir))
+            return;
+
+        foreach (var existing in Directory.GetFiles(profilesDir, $"{userId}.*"))
+            File.Delete(existing);
     }
 
     private static string? NormalizeTelefono(string? telefono)

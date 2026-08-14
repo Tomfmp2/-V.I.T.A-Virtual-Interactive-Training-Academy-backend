@@ -74,6 +74,14 @@ public static class DbSeeder
                     needsUpdate = true;
                 }
 
+                if (email == "admin@vita.local" &&
+                    (existing.Telefono is null || existing.CodigoPais is null))
+                {
+                    existing.Telefono ??= "3001234567";
+                    existing.CodigoPais ??= "+57";
+                    needsUpdate = true;
+                }
+
                 if (needsUpdate)
                     await userManager.UpdateAsync(existing);
 
@@ -89,6 +97,8 @@ public static class DbSeeder
                 Apellido = apellido,
                 Activo = true,
                 CreatedAt = DateTime.UtcNow,
+                Telefono = email == "admin@vita.local" ? "3001234567" : null,
+                CodigoPais = email == "admin@vita.local" ? "+57" : null,
             };
 
             var result = await userManager.CreateAsync(user, password);
