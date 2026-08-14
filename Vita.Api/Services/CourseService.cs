@@ -212,6 +212,13 @@ public class CourseService : ICourseService
         if (!autorizado)
             return new CourseResult { Outcome = CourseOutcome.Forbidden };
 
+        if (estado == "publicado")
+        {
+            var tieneLecciones = await _db.Lecciones.AnyAsync(l => l.IdCurso == id);
+            if (!tieneLecciones)
+                return new CourseResult { Outcome = CourseOutcome.NoLessons };
+        }
+
         var nombreEstado = estado == "borrador" ? "Borrador" : "Publicado";
         curso.IdEstadoCurso = await GetEstadoIdAsync(nombreEstado);
         curso.UpdateAt = DateTime.UtcNow;

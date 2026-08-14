@@ -75,8 +75,17 @@
 | **Swagger** | `http://localhost:5044/swagger` |
 | **Auth** | JWT Bearer |
 
+## Planes pendientes de implementación
+
+| Archivo | Descripción |
+| --- | --- |
+| [`planes/Plan-configuracion-perfil-backend.md`](planes/Plan-configuracion-perfil-backend.md) | Endpoints y conexiones para **Configuración de perfil** (foto, teléfono, cambio de contraseña) |
+
+---
+
 ## No implementado (fuera de alcance actual)
 
+- **Configuración de perfil** — ver plan [`planes/Plan-configuracion-perfil-backend.md`](planes/Plan-configuracion-perfil-backend.md)
 - **Progreso de lecciones** / completar lección (opcional en el PDF)
 - `DELETE /api/enrollments/{id}` — cancelar inscripción
 ---

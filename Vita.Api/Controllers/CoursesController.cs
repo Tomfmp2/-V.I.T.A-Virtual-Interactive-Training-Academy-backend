@@ -166,7 +166,7 @@ public class CoursesController : BaseApiController
 
         return result.Outcome switch
         {
-            CourseOutcome.InvalidInstructor => ApiError(400, "El instructor indicado no existe o no tiene el rol Instructor."),
+            CourseOutcome.InvalidInstructor => ApiError(400, "Debe asignar un instructor válido con rol Instructor."),
             CourseOutcome.CategoryNotFound => ApiError(400, "La categoría no existe o está inactiva."),
             CourseOutcome.NivelNotFound => ApiError(400, "El nivel no existe."),
             CourseOutcome.TituloExists => ApiError(409, "Ya tienes un curso con ese título."),
@@ -208,6 +208,7 @@ public class CoursesController : BaseApiController
         return result.Outcome switch
         {
             CourseOutcome.InvalidEstado => ApiError(400, "Estado inválido. Valores permitidos: borrador, publicado."),
+            CourseOutcome.NoLessons => ApiError(400, "El curso debe tener al menos una lección antes de publicarse."),
             CourseOutcome.NotFound => ApiError(404, "Curso no encontrado."),
             CourseOutcome.Forbidden => ApiError(403, "No tienes permiso para modificar este curso."),
             _ => Ok(result.Course)
