@@ -267,7 +267,8 @@ public class AuthService : IAuthService
             };
         }
 
-        if (!AllowedPhotoTypes.TryGetValue(file.ContentType, out var extension))
+        if (!AllowedPhotoTypes.TryGetValue(file.ContentType, out var extension) ||
+            !await HasImageSignatureAsync(file, extension))
         {
             return new ProfileResult
             {
@@ -309,6 +310,28 @@ public class AuthService : IAuthService
         {
             Outcome = ProfileOutcome.Success,
             Photo = new UploadPhotoResponse { FotoUrl = fotoUrl }
+        };
+    }
+
+    /// <summary>
+    /// El Content-Type lo declara el cliente, así que se comprueba también la
+    /// firma binaria del archivo antes de escribirlo en disco.
+    /// </summary>
+    private static async Task<bool> HasImageSignatureAsync(IFormFile file, string extension)
+    {
+        var header = new byte[12];
+        await using var stream = file.OpenReadStream();
+        var read = await stream.ReadAsync(header);
+        if (read < 12)
+            return false;
+
+        return extension switch
+        {
+            ".jpg" => header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF,
+            ".png" => header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47,
+            ".webp" => header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 &&
+                       header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50,
+            _ => false
         };
     }
 

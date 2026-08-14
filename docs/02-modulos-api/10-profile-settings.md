@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado**
+ **Implementado**
 
 ---
 
@@ -103,13 +103,23 @@ Header requerido: `Authorization: Bearer <token>`
 
 ### `POST /api/auth/me/photo`
 
-**Content-Type:** `multipart/form-data`  
+**Content-Type:** `multipart/form-data`
 **Campo:** `file`
 
 | Regla | Valor |
 | --- | --- |
 | Tipos MIME | `image/jpeg`, `image/png`, `image/webp` |
 | Tamaño máximo | 2 MB |
+| Firma binaria | Debe corresponder al tipo declarado |
+
+El `Content-Type` lo declara el cliente y se puede falsear, así que además se
+comprueban los primeros bytes del archivo. Un `.txt` renombrado a `.png` se rechaza
+con `400`.
+
+El archivo se guarda como `wwwroot/uploads/profiles/{userId}.{extensión}` y en base
+de datos queda solo la ruta relativa, en `AspNetUsers.FotoUrl`. Al subir una foto
+nueva se borra la anterior, incluso si cambia la extensión, de modo que cada usuario
+tiene como máximo un archivo.
 
 **Response 200:**
 ```json
@@ -119,6 +129,11 @@ Header requerido: `Authorization: Bearer <token>`
 ```
 
 Las imágenes se sirven en `http://localhost:5044/uploads/profiles/...` vía archivos estáticos.
+
+> **Almacenamiento:** el binario de la foto vive en `wwwroot/uploads/profiles/` (disco del servidor).
+> En PostgreSQL (`AspNetUsers.FotoUrl`) solo se guarda la ruta relativa.
+> Esos archivos **no** van al repositorio git (ver `.gitignore`).
+> El frontend **no** guarda la imagen en `localStorage`, solo la URL que devuelve el API tras cada carga.
 
 ---
 
@@ -146,11 +161,11 @@ Las imágenes se sirven en `http://localhost:5044/uploads/profiles/...` vía arc
 
 ## Cómo probar en Swagger
 
-1. `POST /api/auth/login` con `admin@vita.local` → copiar token → **Authorize**.
-2. `GET /api/auth/me` → verificar `telefono` y `codigoPais`.
-3. `PUT /api/auth/me` → cambiar nombre o teléfono → `200`.
-4. `POST /api/auth/change-password` → body con contraseñas → `200`.
-5. `POST /api/auth/me/photo` → elegir archivo JPG → `200` con `fotoUrl`.
+1. `POST /api/auth/login` con `admin@vita.local`  copiar token  **Authorize**.
+2. `GET /api/auth/me`  verificar `telefono` y `codigoPais`.
+3. `PUT /api/auth/me`  cambiar nombre o teléfono  `200`.
+4. `POST /api/auth/change-password`  body con contraseñas  `200`.
+5. `POST /api/auth/me/photo`  elegir archivo JPG  `200` con `fotoUrl`.
 6. Abrir `http://localhost:5044` + `fotoUrl` en el navegador.
 
 ---
