@@ -27,7 +27,7 @@ public class ErrorHandlingMiddleware
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(new
             {
-                error = "Ocurrio un error interno en el servidor.",
+                error = "Ocurrió un error interno en el servidor.",
                 statusCode = 500
             });
         }

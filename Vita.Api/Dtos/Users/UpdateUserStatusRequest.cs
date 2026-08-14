@@ -4,6 +4,6 @@ namespace Vita.Api.Dtos.Users;
 
 public class UpdateUserStatusRequest
 {
-    [Required]
+    [Required(ErrorMessage = "El estado activo es obligatorio.")]
     public bool? Activo { get; set; }
 }

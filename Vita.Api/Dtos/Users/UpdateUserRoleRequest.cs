@@ -4,7 +4,7 @@ namespace Vita.Api.Dtos.Users;
 
 public class UpdateUserRoleRequest
 {
-    [Required]
-    [StringLength(50)]
+    [Required(ErrorMessage = "El rol es obligatorio.")]
+    [StringLength(50, ErrorMessage = "El rol no puede superar 50 caracteres.")]
     public string Rol { get; set; } = string.Empty;
 }

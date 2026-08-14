@@ -46,9 +46,9 @@ public static class DbSeeder
 
         var demos = new (string Email, string Password, string Nombre, string Apellido, string Role)[]
         {
-            ("admin@vita.local", adminPassword, "Admin", "Demo", "Admin"),
-            ("instructor@vita.local", instructorPassword, "Instructor", "Demo", "Instructor"),
-            ("estudiante@vita.local", studentPassword, "Estudiante", "Demo", "Estudiante"),
+            ("admin@vita.local", adminPassword, "Admin", "Prueba", "Admin"),
+            ("instructor@vita.local", instructorPassword, "Instructor", "Prueba", "Instructor"),
+            ("estudiante@vita.local", studentPassword, "Estudiante", "Prueba", "Estudiante"),
         };
 
         foreach (var (email, password, nombre, apellido, role) in demos)
@@ -58,6 +58,25 @@ public static class DbSeeder
             {
                 if (!await userManager.IsInRoleAsync(existing, role))
                     await userManager.AddToRoleAsync(existing, role);
+
+                // Normaliza nombres demo antiguos en inglés ("Demo") a español.
+                var needsUpdate = false;
+                if (!string.Equals(existing.Nombre, nombre, StringComparison.Ordinal))
+                {
+                    existing.Nombre = nombre;
+                    needsUpdate = true;
+                }
+
+                if (string.Equals(existing.Apellido, "Demo", StringComparison.OrdinalIgnoreCase) ||
+                    !string.Equals(existing.Apellido, apellido, StringComparison.Ordinal))
+                {
+                    existing.Apellido = apellido;
+                    needsUpdate = true;
+                }
+
+                if (needsUpdate)
+                    await userManager.UpdateAsync(existing);
+
                 continue;
             }
 

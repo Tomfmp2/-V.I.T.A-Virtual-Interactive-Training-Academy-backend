@@ -4,6 +4,6 @@ namespace Vita.Api.Dtos.Enrollments;
 
 public class EnrollmentRequest
 {
-    [Range(1, int.MaxValue)]   // cursoId válido (>= 1)
+    [Range(1, int.MaxValue, ErrorMessage = "El curso no es válido.")]
     public int CursoId { get; set; }
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Vita.Api.Data;
 using Vita.Api.Entities;
+using Vita.Api.Identity;
 using Vita.Api.Repositories;
 using Vita.Api.Services;
 using Microsoft.Extensions.Options;
@@ -40,6 +41,7 @@ builder.Services
         options.User.RequireUniqueEmail = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddErrorDescriber<SpanishIdentityErrorDescriber>()
     .AddDefaultTokenProviders();
 
 // JWT → valida los tokens que lleguen en el header Authorization
@@ -78,7 +80,7 @@ builder.Services.AddControllers()
             var mensaje = context.ModelState
                 .Where(kv => kv.Value?.Errors.Count > 0)
                 .SelectMany(kv => kv.Value!.Errors)
-                .Select(e => e.ErrorMessage)
+                .Select(e => LocalizeValidationMessage(e.ErrorMessage))
                 .FirstOrDefault() ?? "Datos inválidos.";
 
             return new BadRequestObjectResult(new { error = mensaje, statusCode = 400 });
@@ -177,3 +179,21 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static string LocalizeValidationMessage(string? message)
+{
+    if (string.IsNullOrWhiteSpace(message))
+        return "Datos inválidos.";
+
+    // Mensajes por defecto de DataAnnotations / model binding (inglés)
+    if (message.StartsWith("The ", StringComparison.Ordinal) ||
+        message.Contains(" is required", StringComparison.OrdinalIgnoreCase) ||
+        message.Contains("is not valid", StringComparison.OrdinalIgnoreCase) ||
+        message.Contains("must be a string", StringComparison.OrdinalIgnoreCase) ||
+        message.Contains("could not be converted", StringComparison.OrdinalIgnoreCase))
+    {
+        return "Datos inválidos.";
+    }
+
+    return message;
+}
