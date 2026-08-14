@@ -211,6 +211,7 @@ public class CoursesController : BaseApiController
             CourseOutcome.NoLessons => ApiError(400, "El curso debe tener al menos una lección antes de publicarse."),
             CourseOutcome.NotFound => ApiError(404, "Curso no encontrado."),
             CourseOutcome.Forbidden => ApiError(403, "No tienes permiso para modificar este curso."),
+            CourseOutcome.AdminCannotPublish => ApiError(403, "Solo el instructor asignado puede publicar el curso."),
             _ => Ok(result.Course)
         };
     }

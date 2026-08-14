@@ -51,13 +51,12 @@ public class LessonService : ILessonService
         return new LessonResult { Outcome = LessonOutcome.Success, Lesson = MapToResponse(leccion) };
     }
 
-    public async Task<LessonResult> CreateAsync(int courseId, string userId, LessonRequest request)
+    public async Task<LessonResult> CreateAsync(int courseId, string userId, string role, LessonRequest request)
     {
         if (!await _db.Cursos.AnyAsync(c => c.IdCurso == courseId))
             return new LessonResult { Outcome = LessonOutcome.CourseNotFound };
 
-        // Solo el instructor dueño del curso puede escribir
-        if (!await _ownership.IsCourseOwnerAsync(userId, courseId))
+        if (!await CanManageLessonsAsync(userId, role, courseId))
             return new LessonResult { Outcome = LessonOutcome.NotOwner };
 
         // La tarjeta no maneja "tipo": se usa el primer tipo del catálogo por defecto.
@@ -82,12 +81,12 @@ public class LessonService : ILessonService
         return new LessonResult { Outcome = LessonOutcome.Success, Lesson = MapToResponse(leccion) };
     }
 
-    public async Task<LessonResult> UpdateAsync(int courseId, int lessonId, string userId, LessonRequest request)
+    public async Task<LessonResult> UpdateAsync(int courseId, int lessonId, string userId, string role, LessonRequest request)
     {
         if (!await _db.Cursos.AnyAsync(c => c.IdCurso == courseId))
             return new LessonResult { Outcome = LessonOutcome.CourseNotFound };
 
-        if (!await _ownership.IsCourseOwnerAsync(userId, courseId))
+        if (!await CanManageLessonsAsync(userId, role, courseId))
             return new LessonResult { Outcome = LessonOutcome.NotOwner };
 
         var leccion = await _db.Lecciones
@@ -104,12 +103,12 @@ public class LessonService : ILessonService
         return new LessonResult { Outcome = LessonOutcome.Success, Lesson = MapToResponse(leccion) };
     }
 
-    public async Task<LessonResult> DeleteAsync(int courseId, int lessonId, string userId)
+    public async Task<LessonResult> DeleteAsync(int courseId, int lessonId, string userId, string role)
     {
         if (!await _db.Cursos.AnyAsync(c => c.IdCurso == courseId))
             return new LessonResult { Outcome = LessonOutcome.CourseNotFound };
 
-        if (!await _ownership.IsCourseOwnerAsync(userId, courseId))
+        if (!await CanManageLessonsAsync(userId, role, courseId))
             return new LessonResult { Outcome = LessonOutcome.NotOwner };
 
         var leccion = await _db.Lecciones
@@ -122,6 +121,9 @@ public class LessonService : ILessonService
 
         return new LessonResult { Outcome = LessonOutcome.Success };
     }
+
+    private async Task<bool> CanManageLessonsAsync(string userId, string role, int courseId) =>
+        role == "Admin" || await _ownership.IsCourseOwnerAsync(userId, courseId);
 
     private static LessonResponse MapToResponse(Leccion l) => new()
     {

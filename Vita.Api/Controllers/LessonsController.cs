@@ -22,6 +22,9 @@ public class LessonsController : BaseApiController
     private string UserId =>
         User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub") ?? "";
 
+    private string CurrentRole =>
+        User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role) ?? "";
+
     private const string NotOwnerMsg = "Solo el instructor dueño del curso puede gestionar sus lecciones.";
 
     // GET /api/courses/{courseId}/lessons  (autenticado) — ordenado por orden
@@ -53,7 +56,7 @@ public class LessonsController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create(int courseId, [FromBody] LessonRequest request)
     {
-        var result = await _service.CreateAsync(courseId, UserId, request);
+        var result = await _service.CreateAsync(courseId, UserId, CurrentRole, request);
         return result.Outcome switch
         {
             LessonOutcome.CourseNotFound => ApiError(404, "Curso no encontrado."),
@@ -66,7 +69,7 @@ public class LessonsController : BaseApiController
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int courseId, int id, [FromBody] LessonRequest request)
     {
-        var result = await _service.UpdateAsync(courseId, id, UserId, request);
+        var result = await _service.UpdateAsync(courseId, id, UserId, CurrentRole, request);
         return result.Outcome switch
         {
             LessonOutcome.CourseNotFound => ApiError(404, "Curso no encontrado."),
@@ -80,7 +83,7 @@ public class LessonsController : BaseApiController
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int courseId, int id)
     {
-        var result = await _service.DeleteAsync(courseId, id, UserId);
+        var result = await _service.DeleteAsync(courseId, id, UserId, CurrentRole);
         return result.Outcome switch
         {
             LessonOutcome.CourseNotFound => ApiError(404, "Curso no encontrado."),

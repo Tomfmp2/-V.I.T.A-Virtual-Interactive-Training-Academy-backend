@@ -212,6 +212,9 @@ public class CourseService : ICourseService
         if (!autorizado)
             return new CourseResult { Outcome = CourseOutcome.Forbidden };
 
+        if (estado == "publicado" && role == "Admin")
+            return new CourseResult { Outcome = CourseOutcome.AdminCannotPublish };
+
         if (estado == "publicado")
         {
             var tieneLecciones = await _db.Lecciones.AnyAsync(l => l.IdCurso == id);

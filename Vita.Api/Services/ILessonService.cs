@@ -21,7 +21,7 @@ public interface ILessonService
 {
     Task<LessonResult> GetByCourseAsync(int courseId);
     Task<LessonResult> GetByIdAsync(int courseId, int lessonId);
-    Task<LessonResult> CreateAsync(int courseId, string userId, LessonRequest request);
-    Task<LessonResult> UpdateAsync(int courseId, int lessonId, string userId, LessonRequest request);
-    Task<LessonResult> DeleteAsync(int courseId, int lessonId, string userId);
+    Task<LessonResult> CreateAsync(int courseId, string userId, string role, LessonRequest request);
+    Task<LessonResult> UpdateAsync(int courseId, int lessonId, string userId, string role, LessonRequest request);
+    Task<LessonResult> DeleteAsync(int courseId, int lessonId, string userId, string role);
 }

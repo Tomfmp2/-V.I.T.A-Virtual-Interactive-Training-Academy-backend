@@ -5,7 +5,8 @@ namespace Vita.Api.Services;
 public enum CourseOutcome
 {
     Success, NotFound, Forbidden, CategoryNotFound, NivelNotFound,
-    TituloExists, InvalidEstado, InvalidInstructor, HasEnrollments, HasLessons, NoLessons
+    TituloExists, InvalidEstado, InvalidInstructor, HasEnrollments, HasLessons, NoLessons,
+    AdminCannotPublish
 }
 
 public class CourseResult

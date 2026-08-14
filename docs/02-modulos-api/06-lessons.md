@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado**
+ **Implementado**
 
 ---
 
@@ -18,12 +18,12 @@ Base: `/api/courses/{courseId}/lessons`
 | --- | --- | --- | --- |
 | `GET` | `/api/courses/{courseId}/lessons` | Bearer · cualquier rol | Listar lecciones del curso (ordenadas por `orden`) |
 | `GET` | `/api/courses/{courseId}/lessons/{id}` | Bearer · cualquier rol | Ver detalle de una lección |
-| `POST` | `/api/courses/{courseId}/lessons` | Bearer · Instructor (dueño del curso) | Crear lección en el curso |
-| `PUT` | `/api/courses/{courseId}/lessons/{id}` | Bearer · Instructor (dueño del curso) | Actualizar lección |
-| `DELETE` | `/api/courses/{courseId}/lessons/{id}` | Bearer · Instructor (dueño del curso) | Eliminar lección |
+| `POST` | `/api/courses/{courseId}/lessons` | Bearer · Instructor (dueño) o Admin | Crear lección en el curso |
+| `PUT` | `/api/courses/{courseId}/lessons/{id}` | Bearer · Instructor (dueño) o Admin | Actualizar lección |
+| `DELETE` | `/api/courses/{courseId}/lessons/{id}` | Bearer · Instructor (dueño) o Admin | Eliminar lección |
 
-> Las mutaciones (POST, PUT, DELETE) solo las puede hacer el Instructor que **creó** el curso.  
-> Cualquier usuario autenticado puede leer las lecciones.
+> Las mutaciones las puede hacer el **Instructor dueño** del curso o un **Admin**.
+> Publicar el curso sigue siendo exclusivo del instructor asignado (ver módulo Cursos).
 
 ---
 
@@ -94,7 +94,7 @@ No requiere body. **Response 204** en caso de éxito.
 
 | Código | Cuándo | Mensaje típico |
 | --- | --- | --- |
-| `403` | El instructor no es dueño del curso | `"Solo el instructor dueño del curso puede gestionar sus lecciones."` |
+| `403` | Instructor no dueño (sin rol Admin) | `"Solo el instructor dueño del curso puede gestionar sus lecciones."` |
 | `404` | Curso no encontrado | `"Curso no encontrado."` |
 | `404` | Lección no encontrada | `"Lección no encontrada."` |
 
@@ -105,7 +105,7 @@ No requiere body. **Response 204** en caso de éxito.
 - Las lecciones se devuelven **ordenadas por el campo `orden`** (ascendente).
 - El campo `orden` define la posición de la lección dentro del curso. El equipo debe gestionar el orden manualmente (no hay reordenamiento automático).
 - El campo `recurso` es una URL libre (video, PDF, enlace externo). No hay validación de tipo de contenido.
-- Solo el Instructor dueño del curso puede crear, editar o eliminar lecciones.
+- Solo el Instructor dueño del curso o un Admin puede crear, editar o eliminar lecciones.
 - El userId se extrae del **token**, no del body.
 
 ---
@@ -113,11 +113,11 @@ No requiere body. **Response 204** en caso de éxito.
 ## Cómo probar en Swagger
 
 1. Login con `instructor@vita.local`, autorizar.
-2. Crear un curso primero (`POST /api/courses`) → obtener su `id`.
-3. `POST /api/courses/{courseId}/lessons` → body con título, orden 1 → `201`.
-4. `GET /api/courses/{courseId}/lessons` → ver lista ordenada → `200`.
-5. `PUT /api/courses/{courseId}/lessons/{id}` → actualizar título → `200`.
-6. `DELETE /api/courses/{courseId}/lessons/{id}` → `204`.
+2. Crear un curso primero (`POST /api/courses`)  obtener su `id`.
+3. `POST /api/courses/{courseId}/lessons`  body con título, orden 1  `201`.
+4. `GET /api/courses/{courseId}/lessons`  ver lista ordenada  `200`.
+5. `PUT /api/courses/{courseId}/lessons/{id}`  actualizar título  `200`.
+6. `DELETE /api/courses/{courseId}/lessons/{id}`  `204`.
 
 ---
 
