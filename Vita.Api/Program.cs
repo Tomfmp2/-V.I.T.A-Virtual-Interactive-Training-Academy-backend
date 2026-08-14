@@ -172,7 +172,12 @@ if (app.Environment.IsDevelopment())
     app.UseCors("AllowReactApp");
 }
 
-app.UseHttpsRedirection();
+// En local el host es solo HTTP: redirigir rompería el consumo desde el frontend.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
