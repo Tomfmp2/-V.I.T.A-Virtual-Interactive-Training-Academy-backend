@@ -235,4 +235,24 @@ public class CoursesController : BaseApiController
             _ => NoContent()
         };
     }
+
+    // POST /api/courses/{id}/cover — Instructor dueño o Admin (multipart)
+    [HttpPost("{id:int}/cover")]
+    [Authorize(Roles = "Instructor,Admin")]
+    [RequestSizeLimit(2 * 1024 * 1024)]
+    public async Task<IActionResult> UploadCover(int id, IFormFile file)
+    {
+        var userId = CurrentUserId;
+        if (userId is null)
+            return ApiError(401, "No autorizado.");
+
+        var result = await _service.UploadCoverAsync(id, file, userId, CurrentRole);
+        return result.Outcome switch
+        {
+            CourseOutcome.NotFound => ApiError(404, "Curso no encontrado."),
+            CourseOutcome.Forbidden => ApiError(403, "No tienes permiso para modificar este curso."),
+            CourseOutcome.FileInvalid => ApiError(400, string.Join(" ", result.Errors)),
+            _ => Ok(result.Cover)
+        };
+    }
 }

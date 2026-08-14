@@ -88,6 +88,7 @@
 | `PUT` | `/api/courses/{id}` | Bearer · Instructor (dueño) / Admin | Implementado |
 | `PATCH` | `/api/courses/{id}/status` | Bearer · Instructor (dueño) / Admin | Implementado |
 | `DELETE` | `/api/courses/{id}` | Bearer · Instructor (dueño) o Admin | Implementado |
+| `POST` | `/api/courses/{id}/cover` | Bearer · Instructor (dueño) / Admin | Implementado |
 
 ---
 

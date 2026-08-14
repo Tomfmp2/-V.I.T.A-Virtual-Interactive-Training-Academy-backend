@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Vita.Api.Common;
 using Vita.Api.Dtos.Auth;
 using Vita.Api.Entities;
 
@@ -13,15 +14,6 @@ namespace Vita.Api.Services;
  
 public class AuthService : IAuthService
 {
-    private const long MaxPhotoBytes = 2 * 1024 * 1024;
-
-    private static readonly Dictionary<string, string> AllowedPhotoTypes = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["image/jpeg"] = ".jpg",
-        ["image/png"] = ".png",
-        ["image/webp"] = ".webp"
-    };
-
     private readonly UserManager<Usuario> _userManager;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _environment;
@@ -249,26 +241,16 @@ public class AuthService : IAuthService
         if (!usuario.Activo)
             return new ProfileResult { Outcome = ProfileOutcome.Inactive };
 
-        if (file is null || file.Length == 0)
+        if (!ImageUploadHelper.TryValidate(file, out var extension, out var error))
         {
             return new ProfileResult
             {
                 Outcome = ProfileOutcome.FileInvalid,
-                Errors = ["Debes seleccionar una imagen."]
+                Errors = [error!]
             };
         }
 
-        if (file.Length > MaxPhotoBytes)
-        {
-            return new ProfileResult
-            {
-                Outcome = ProfileOutcome.FileInvalid,
-                Errors = ["La imagen no puede superar 2 MB."]
-            };
-        }
-
-        if (!AllowedPhotoTypes.TryGetValue(file.ContentType, out var extension) ||
-            !await HasImageSignatureAsync(file, extension))
+        if (!await ImageUploadHelper.HasImageSignatureAsync(file, extension))
         {
             return new ProfileResult
             {
@@ -281,7 +263,7 @@ public class AuthService : IAuthService
         var profilesDir = Path.Combine(webRoot, "uploads", "profiles");
         Directory.CreateDirectory(profilesDir);
 
-        DeleteExistingPhotos(profilesDir, userId);
+        ImageUploadHelper.DeleteExistingFiles(profilesDir, userId);
 
         var fileName = $"{userId}{extension}";
         var physicalPath = Path.Combine(profilesDir, fileName);
@@ -311,37 +293,6 @@ public class AuthService : IAuthService
             Outcome = ProfileOutcome.Success,
             Photo = new UploadPhotoResponse { FotoUrl = fotoUrl }
         };
-    }
-
-    /// <summary>
-    /// El Content-Type lo declara el cliente, así que se comprueba también la
-    /// firma binaria del archivo antes de escribirlo en disco.
-    /// </summary>
-    private static async Task<bool> HasImageSignatureAsync(IFormFile file, string extension)
-    {
-        var header = new byte[12];
-        await using var stream = file.OpenReadStream();
-        var read = await stream.ReadAsync(header);
-        if (read < 12)
-            return false;
-
-        return extension switch
-        {
-            ".jpg" => header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF,
-            ".png" => header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47,
-            ".webp" => header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 &&
-                       header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50,
-            _ => false
-        };
-    }
-
-    private static void DeleteExistingPhotos(string profilesDir, string userId)
-    {
-        if (!Directory.Exists(profilesDir))
-            return;
-
-        foreach (var existing in Directory.GetFiles(profilesDir, $"{userId}.*"))
-            File.Delete(existing);
     }
 
     private static string? NormalizeTelefono(string? telefono)

@@ -21,9 +21,11 @@
 | `PUT` | `/api/courses/{id}` | Bearer · Instructor (dueño) | Actualizar curso |
 | `PATCH` | `/api/courses/{id}/status` | Bearer · Instructor (dueño) | Cambiar estado (borrador/publicado) |
 | `DELETE` | `/api/courses/{id}` | Bearer · Instructor (dueño) o Admin | Eliminar curso |
+| `POST` | `/api/courses/{id}/cover` | Bearer · Instructor (dueño) / Admin | Subir portada (multipart) |
 
 > El `IdInstructor` del curso se extrae del token, no del body.
 > `GET /api/courses/me` está declarado **antes** de `GET /api/courses/{id}` en el router para evitar conflictos.
+> La portada se sube **después** de crear el curso (mismo patrón que la foto de perfil).
 
 ---
 
@@ -124,6 +126,41 @@ Valores permitidos: `borrador`, `publicado` (insensible a mayúsculas).
 
 ---
 
+### `POST /api/courses/{id}/cover`
+
+**Content-Type:** `multipart/form-data`  
+**Campo:** `file`
+
+| Regla | Valor |
+| --- | --- |
+| Tipos MIME | `image/jpeg`, `image/png`, `image/webp` |
+| Tamaño máximo | 2 MB |
+| Firma binaria | Debe corresponder al tipo declarado |
+| Autorización | Instructor dueño del curso o Admin |
+
+El archivo se guarda como `wwwroot/uploads/covers/{courseId}.{extensión}` y en base
+de datos queda la ruta relativa en `Curso.ImagenPortadaUrl` (p. ej.
+`/uploads/covers/12.jpg`). Al subir otra portada se reemplaza el archivo anterior.
+
+**Response 200:**
+```json
+{
+  "imagenPortadaUrl": "/uploads/covers/12.jpg"
+}
+```
+
+> En Development, `DbSeeder` genera portadas PNG locales para cursos sin
+> `imagenPortadaUrl` (carpeta `wwwroot/uploads/covers/`). En producción las
+> portadas se suben solo con este endpoint.
+
+Las imágenes se sirven en `http://localhost:5044/uploads/covers/...` vía archivos estáticos.
+
+> En `PUT /api/courses/{id}`, si `imagenPortadaUrl` llega como `null` (omitido o no
+> enviado), **no se borra** la portada existente. Solo se actualiza cuando el body
+> trae un string explícito (p. ej. URL externa) o al usar este endpoint multipart.
+
+---
+
 ## Catálogos de referencia (seed)
 
 ### Niveles (`idNivel`)
@@ -150,6 +187,7 @@ Valores permitidos: `borrador`, `publicado` (insensible a mayúsculas).
 | `400` | Categoría no existe o inactiva | `"La categoría no existe o está inactiva."` |
 | `400` | Nivel no existe | `"El nivel no existe."` |
 | `400` | Estado inválido | `"Estado inválido. Valores permitidos: borrador, publicado."` |
+| `400` | Portada inválida | `"Formato no permitido. Usa JPG, PNG o WEBP."` / tamaño |
 | `403` | Instructor intenta modificar curso ajeno | `"No tienes permiso para modificar este curso."` |
 | `404` | Curso no encontrado | `"Curso no encontrado."` |
 | `409` | Título duplicado para ese instructor | `"Ya tienes un curso con ese título."` |
@@ -175,7 +213,8 @@ Valores permitidos: `borrador`, `publicado` (insensible a mayúsculas).
 2. `POST /api/courses` → body con título, idCategoria (1), idNivel (1) → `201`.
 3. `GET /api/courses/me` → ver tus cursos.
 4. `PATCH /api/courses/{id}/status` → `{ "estado": "publicado" }` → `200`.
-5. `GET /api/courses` → ver todos los cursos (cualquier rol).
+5. `POST /api/courses/{id}/cover` → form-data `file` (JPG/PNG/WEBP ≤ 2 MB) → `200` con `imagenPortadaUrl`.
+6. `GET /api/courses` → ver todos los cursos (cualquier rol); la lista incluye `imagenPortadaUrl`.
 
 ---
 
@@ -184,4 +223,6 @@ Valores permitidos: `borrador`, `publicado` (insensible a mayúsculas).
 - Controller: `Vita.Api/Controllers/CoursesController.cs`
 - Service: `Vita.Api/Services/CourseService.cs` / `ICourseService.cs`
 - Ownership: `Vita.Api/Services/CourseOwnershipService.cs`
-- DTOs: `Vita.Api/Dtos/Courses/` (`CourseCreateRequest`, `CourseUpdateRequest`, `CourseStatusRequest`, `CourseResponse`, `CourseListItemResponse`)
+- Validación de imagen: `Vita.Api/Common/ImageUploadHelper.cs`
+- DTOs: `Vita.Api/Dtos/Courses/` (`CourseCreateRequest`, `CourseUpdateRequest`, `CourseStatusRequest`, `CourseResponse`, `CourseListItemResponse`, `UploadCoverResponse`)
+- Archivos estáticos: `Vita.Api/wwwroot/uploads/covers/`

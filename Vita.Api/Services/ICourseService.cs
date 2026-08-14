@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Vita.Api.Dtos.Courses;
 
 namespace Vita.Api.Services;
@@ -6,13 +7,15 @@ public enum CourseOutcome
 {
     Success, NotFound, Forbidden, CategoryNotFound, NivelNotFound,
     TituloExists, InvalidEstado, InvalidInstructor, HasEnrollments, HasLessons, NoLessons,
-    AdminCannotPublish
+    AdminCannotPublish, FileInvalid
 }
 
 public class CourseResult
 {
     public CourseOutcome Outcome { get; set; }
     public CourseResponse? Course { get; set; }
+    public UploadCoverResponse? Cover { get; set; }
+    public List<string> Errors { get; set; } = [];
 }
 
 public interface ICourseService
@@ -25,4 +28,5 @@ public interface ICourseService
     Task<CourseResult> UpdateAsync(int id, CourseUpdateRequest request, string userId, string role);
     Task<CourseResult> ChangeStatusAsync(int id, CourseStatusRequest request, string userId, string role);
     Task<CourseResult> DeleteAsync(int id, string userId, string role);
+    Task<CourseResult> UploadCoverAsync(int id, IFormFile file, string userId, string role);
 }

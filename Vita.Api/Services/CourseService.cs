@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Vita.Api.Common;
@@ -12,15 +14,18 @@ public class CourseService : ICourseService
     private readonly ApplicationDbContext _db;
     private readonly ICourseOwnershipService _ownership;
     private readonly UserManager<Usuario> _userManager;
+    private readonly IWebHostEnvironment _environment;
 
     public CourseService(
         ApplicationDbContext db,
         ICourseOwnershipService ownership,
-        UserManager<Usuario> userManager)
+        UserManager<Usuario> userManager,
+        IWebHostEnvironment environment)
     {
         _db = db;
         _ownership = ownership;
         _userManager = userManager;
+        _environment = environment;
     }
 
     public async Task<List<CourseListItemResponse>> GetAllAsync(string userId, string role)
@@ -184,7 +189,9 @@ public class CourseService : ICourseService
         curso.IdNivel = request.IdNivel;
         curso.DescripcionCorta = request.DescripcionCorta;
         curso.DescripcionLarga = request.DescripcionLarga;
-        curso.ImagenPortadaUrl = request.ImagenPortadaUrl;
+        // null = no tocar la portada (p. ej. edición desde el front sin reenviar la URL)
+        if (request.ImagenPortadaUrl is not null)
+            curso.ImagenPortadaUrl = request.ImagenPortadaUrl;
         curso.DuracionEstimadaMin = request.DuracionEstimadaMin;
         curso.UpdateAt = DateTime.UtcNow;
 
@@ -254,6 +261,71 @@ public class CourseService : ICourseService
         await _db.SaveChangesAsync();
 
         return new CourseResult { Outcome = CourseOutcome.Success };
+    }
+
+    public async Task<CourseResult> UploadCoverAsync(int id, IFormFile file, string userId, string role)
+    {
+        var curso = await _db.Cursos.FindAsync(id);
+        if (curso is null)
+            return new CourseResult { Outcome = CourseOutcome.NotFound };
+
+        var autorizado = role == "Admin" || await _ownership.IsCourseOwnerAsync(userId, id);
+        if (!autorizado)
+            return new CourseResult { Outcome = CourseOutcome.Forbidden };
+
+        if (!ImageUploadHelper.TryValidate(file, out var extension, out var error))
+        {
+            return new CourseResult
+            {
+                Outcome = CourseOutcome.FileInvalid,
+                Errors = [error!]
+            };
+        }
+
+        if (!await ImageUploadHelper.HasImageSignatureAsync(file, extension))
+        {
+            return new CourseResult
+            {
+                Outcome = CourseOutcome.FileInvalid,
+                Errors = ["Formato no permitido. Usa JPG, PNG o WEBP."]
+            };
+        }
+
+        var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+        var coversDir = Path.Combine(webRoot, "uploads", "covers");
+        Directory.CreateDirectory(coversDir);
+
+        var stem = id.ToString();
+        ImageUploadHelper.DeleteExistingFiles(coversDir, stem);
+
+        var fileName = $"{stem}{extension}";
+        var physicalPath = Path.Combine(coversDir, fileName);
+        await using (var stream = new FileStream(physicalPath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var imagenPortadaUrl = $"/uploads/covers/{fileName}";
+        curso.ImagenPortadaUrl = imagenPortadaUrl;
+        curso.UpdateAt = DateTime.UtcNow;
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch
+        {
+            if (File.Exists(physicalPath))
+                File.Delete(physicalPath);
+            throw;
+        }
+
+        return new CourseResult
+        {
+            Outcome = CourseOutcome.Success,
+            Cover = new UploadCoverResponse { ImagenPortadaUrl = imagenPortadaUrl },
+            Course = MapToResponse((await LoadCourseAsync(id))!)
+        };
     }
 
     private async Task<int> GetEstadoIdAsync(string nombre) =>
