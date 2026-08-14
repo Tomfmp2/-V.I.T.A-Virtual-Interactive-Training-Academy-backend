@@ -82,12 +82,27 @@ Controllers no acceden directamente a la persistencia.
 
 Requisitos: SDK .NET 10, PostgreSQL.
 
+**Primera vez en cada PC** (base + secretos + arranque):
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\setup-dev.ps1
+```
+
+La primera línea permite ejecutar el script solo en esa ventana de PowerShell; Windows bloquea los `.ps1` por defecto. No cambia la configuración del sistema ni requiere permisos de administrador.
+
+Detalle, ruta manual y solución de problemas: [`docs/EJECUTAR-EL-BACKEND.md`](docs/EJECUTAR-EL-BACKEND.md).
+
+> **Nota:** `DB/Script.sql` es **material de referencia** del modelo de datos. **No** lo ejecutes para montar el entorno: el esquema lo generan las migraciones de EF Core (`db.Database.Migrate()`). Ejecutar el script SQL y las migraciones juntos provoca el conflicto de dueños (`postgres` vs `vita_user`).
+
+Si ya tienes base y User Secrets configurados:
+
 ```bash
 dotnet restore
 dotnet run --project Vita.Api
 ```
 
-**Obligatorio en cada PC** (Development): configurar las contraseñas de seed **antes** del primer `dotnet run`. Si faltan, el API arranca migraciones y luego falla con `Falta la contraseña de seed`. Ver sección [Seeds locales (User Secrets)](#seeds-locales-user-secrets).
+**Obligatorio en cada PC** (Development): las contraseñas de seed van en User Secrets. Si faltan, el API arranca migraciones y luego falla con `Falta la contraseña de seed`. Ver sección [Seeds locales (User Secrets)](#seeds-locales-user-secrets) o la guía única.
 
 Swagger (desarrollo):
 
@@ -206,3 +221,4 @@ dotnet run --project Vita.Api
 | [docs/01-setup-local/](docs/01-setup-local/) | Configurar `.env`, seeds y Swagger |
 | [docs/02-modulos-api/](docs/02-modulos-api/) | Detalle de los 7 módulos implementados |
 | [docs/03-base-datos/](docs/03-base-datos/) | Modelo Identity, migraciones y Script SQL |
+| [docs/EJECUTAR-EL-BACKEND.md](docs/EJECUTAR-EL-BACKEND.md) | Guía única para levantar el backend |
