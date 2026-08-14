@@ -80,9 +80,9 @@
 | `GET` | `/api/courses` | Bearer (cualquier rol) | ✅ Implementado |
 | `GET` | `/api/courses/me` | Bearer · Instructor | ✅ Implementado |
 | `GET` | `/api/courses/{id}` | Bearer (cualquier rol) | ✅ Implementado |
-| `POST` | `/api/courses` | Bearer · Instructor | ✅ Implementado |
-| `PUT` | `/api/courses/{id}` | Bearer · Instructor (dueño) | ✅ Implementado |
-| `PATCH` | `/api/courses/{id}/status` | Bearer · Instructor (dueño) | ✅ Implementado |
+| `POST` | `/api/courses` | Bearer · Instructor / Admin | ✅ Implementado |
+| `PUT` | `/api/courses/{id}` | Bearer · Instructor (dueño) / Admin | ✅ Implementado |
+| `PATCH` | `/api/courses/{id}/status` | Bearer · Instructor (dueño) / Admin | ✅ Implementado |
 | `DELETE` | `/api/courses/{id}` | Bearer · Instructor (dueño) o Admin | ✅ Implementado |
 
 ---
@@ -111,10 +111,36 @@
 
 ---
 
+## Módulo 8 — Reports · `/api/reports`
+
+| Método | Ruta | Auth / Rol | Estado |
+| --- | --- | --- | --- |
+| `GET` | `/api/reports/courses-by-instructor` | Bearer · Admin | ✅ Implementado |
+| `GET` | `/api/reports/students-by-course` | Bearer · Admin / Instructor | ✅ Implementado |
+| `GET` | `/api/reports/top-courses` | Bearer · Admin | ✅ Implementado |
+
+> Detalle: [`02-modulos-api/08-reports.md`](../02-modulos-api/08-reports.md).  
+> `instructorId` es `string` (Identity). Conteos de inscripción solo estado **Activa**.
+
+---
+
+## Levels · `/api/levels` (catálogo auxiliar)
+
+| Método | Ruta | Auth / Rol | Estado |
+| --- | --- | --- | --- |
+| `GET` | `/api/levels` | Bearer (cualquier rol) | ✅ Implementado |
+| `GET` | `/api/levels/{id}` | Bearer (cualquier rol) | ✅ Implementado |
+| `POST` | `/api/levels` | Bearer · Admin | ✅ Implementado |
+| `PUT` | `/api/levels/{id}` | Bearer · Admin | ✅ Implementado |
+| `DELETE` | `/api/levels/{id}` | Bearer · Admin | ✅ Implementado |
+
+> Ficha: [`02-modulos-api/09-levels.md`](../02-modulos-api/09-levels.md).
+
+---
+
 ## Pendientes / No implementados
 
 | Módulo | Descripción | Estado |
 | --- | --- | --- |
-| Reportes | Estadísticas, dashboards | ❌ No implementado |
-| Progreso de lecciones | Completar lección, % avance | ❌ No implementado |
+| Progreso de lecciones | Completar lección, % avance | ❌ No implementado (opcional PDF) |
 | `DELETE /api/enrollments/{id}` | Cancelar inscripción | ❌ No implementado |
