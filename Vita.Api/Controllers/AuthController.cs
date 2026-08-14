@@ -61,6 +61,27 @@ public class AuthController : BaseApiController
         return Ok(me);
     }
 
+    [Authorize]
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateMe([FromBody] UpdateProfileRequest request)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? User.FindFirstValue("sub");
+
+        if (userId is null)
+            return ApiError(401, "No autorizado.");
+
+        var result = await _authService.UpdateProfileAsync(userId, request);
+
+        return result.Outcome switch
+        {
+            ProfileOutcome.NotFound => ApiError(401, "No autorizado."),
+            ProfileOutcome.Inactive => ApiError(403, "Usuario inactivo."),
+            ProfileOutcome.ValidationError => ApiError(400, string.Join(" ", result.Errors)),
+            _ => Ok(result.Profile)
+        };
+    }
+
     [Authorize] // exije un Bearer token valido. Si no lo trae ASP.NET responde 401
     [HttpPost("logout")]
     public IActionResult Logout()

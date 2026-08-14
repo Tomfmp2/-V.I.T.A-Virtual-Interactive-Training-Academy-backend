@@ -11,6 +11,10 @@ public class Usuario : IdentityUser
     public string Apellido { get; set; } =string.Empty;
     [MaxLength(255)]
     public string? FotoUrl { get; set; }
+    [MaxLength(20)]
+    public string? Telefono { get; set; }
+    [MaxLength(10)]
+    public string? CodigoPais { get; set; }
     public string? Biografia { get; set; } 
     public bool Activo { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 

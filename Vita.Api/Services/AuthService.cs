@@ -148,16 +148,67 @@ public class AuthService : IAuthService
         var roles = await _userManager.GetRolesAsync(usuario);
         var rol = roles.FirstOrDefault() ?? "Estudiante";
 
-        return new MeResponse
+        return MapMe(usuario, rol);
+    }
+
+    public async Task<ProfileResult> UpdateProfileAsync(string userId, UpdateProfileRequest request)
+    {
+        var usuario = await _userManager.FindByIdAsync(userId);
+        if (usuario is null)
+            return new ProfileResult { Outcome = ProfileOutcome.NotFound };
+
+        if (!usuario.Activo)
+            return new ProfileResult { Outcome = ProfileOutcome.Inactive };
+
+        usuario.Nombre = request.Nombre.Trim();
+        usuario.Apellido = request.Apellido.Trim();
+        usuario.Telefono = NormalizeTelefono(request.Telefono);
+        usuario.CodigoPais = string.IsNullOrWhiteSpace(request.CodigoPais)
+            ? null
+            : request.CodigoPais.Trim();
+
+        var update = await _userManager.UpdateAsync(usuario);
+        if (!update.Succeeded)
+        {
+            return new ProfileResult
+            {
+                Outcome = ProfileOutcome.ValidationError,
+                Errors = update.Errors.Select(e => e.Description).ToList()
+            };
+        }
+
+        var roles = await _userManager.GetRolesAsync(usuario);
+        var rol = roles.FirstOrDefault() ?? "Estudiante";
+
+        return new ProfileResult
+        {
+            Outcome = ProfileOutcome.Success,
+            Profile = MapMe(usuario, rol)
+        };
+    }
+
+    private static string? NormalizeTelefono(string? telefono)
+    {
+        if (string.IsNullOrWhiteSpace(telefono))
+            return null;
+
+        var digits = new string(telefono.Where(char.IsDigit).ToArray());
+        return digits.Length == 0 ? null : digits;
+    }
+
+    private static MeResponse MapMe(Usuario usuario, string rol) =>
+        new()
         {
             Id = usuario.Id,
             Nombre = usuario.Nombre,
             Apellido = usuario.Apellido,
             Email = usuario.Email!,
             Rol = rol,
-            Activo = usuario.Activo
+            Activo = usuario.Activo,
+            FotoUrl = usuario.FotoUrl,
+            Telefono = usuario.Telefono,
+            CodigoPais = usuario.CodigoPais
         };
-    } 
 
 
 

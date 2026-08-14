@@ -29,10 +29,25 @@ public class LoginResult
     public LoginResponse? Response { get; set; }
 }
 
+public enum ProfileOutcome
+{
+    Success,
+    NotFound,
+    Inactive,
+    ValidationError
+}
+
+public class ProfileResult
+{
+    public ProfileOutcome Outcome { get; set; }
+    public MeResponse? Profile { get; set; }
+    public List<string> Errors { get; set; } = new();
+}
+
 public interface IAuthService
 {
     Task<RegisterResult> RegisterAsync(RegisterRequest request);
     Task<LoginResult> LoginAsync(LoginRequest request);
     Task<MeResponse?> GetMeAsync(string userId);
-
+    Task<ProfileResult> UpdateProfileAsync(string userId, UpdateProfileRequest request);
 }
