@@ -17,13 +17,13 @@ Sirve para:
 
 ## Qué NO es
 
-> ⚠️ `DB/Script.sql` **no** es el mecanismo de despliegue diario de la base de datos.
+>  `DB/Script.sql` **no** es el mecanismo de despliegue diario de la base de datos.
 
 | Acción | Método correcto | Script.sql |
 | --- | --- | --- |
-| Crear el esquema inicial | Migración EF Core | ❌ No ejecutar manualmente |
-| Agregar columna nueva | `dotnet ef migrations add` | ❌ No modificar la BD a mano |
-| Actualizar BD local | `dotnet run` (con `Database.Migrate()`) | ❌ No usar como script SQL |
+| Crear el esquema inicial | Migración EF Core | No ejecutar manualmente |
+| Agregar columna nueva | `dotnet ef migrations add` | No modificar la BD a mano |
+| Actualizar BD local | `dotnet run` (con `Database.Migrate()`) | No usar como script SQL |
 
 Ejecutar `Script.sql` directamente en PostgreSQL desalinearía el historial de migraciones EF Core y rompería el flujo del equipo.
 

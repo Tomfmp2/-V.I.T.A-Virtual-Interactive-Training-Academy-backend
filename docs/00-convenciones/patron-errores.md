@@ -57,10 +57,10 @@ return ApiError(409, "Ya existe una categoría con ese nombre.");
 
 ## Qué NO hacer
 
-- ❌ Envelopes `{ success: true, data: {}, errors: [] }` — VITA no los usa.
-- ❌ Devolver stack traces al cliente.
-- ❌ Retornar errores con código 200.
-- ❌ Usar `ControllerBase` en vez de `BaseApiController` cuando necesites `ApiError`.
+- Envelopes `{ success: true, data: {}, errors: [] }` — VITA no los usa.
+- Devolver stack traces al cliente.
+- Retornar errores con código 200.
+- Usar `ControllerBase` en vez de `BaseApiController` cuando necesites `ApiError`.
 
 ---
 

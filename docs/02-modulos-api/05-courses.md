@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado**
+ **Implementado**
 
 ---
 
@@ -22,7 +22,7 @@
 | `PATCH` | `/api/courses/{id}/status` | Bearer · Instructor (dueño) | Cambiar estado (borrador/publicado) |
 | `DELETE` | `/api/courses/{id}` | Bearer · Instructor (dueño) o Admin | Eliminar curso |
 
-> El `IdInstructor` del curso se extrae del token, no del body.  
+> El `IdInstructor` del curso se extrae del token, no del body.
 > `GET /api/courses/me` está declarado **antes** de `GET /api/courses/{id}` en el router para evitar conflictos.
 
 ---

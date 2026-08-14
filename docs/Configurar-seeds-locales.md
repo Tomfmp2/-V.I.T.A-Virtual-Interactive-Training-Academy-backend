@@ -1,8 +1,8 @@
-> ⚠️ **Archivo legacy** — el contenido actualizado está en [`01-setup-local/configurar-seeds.md`](01-setup-local/configurar-seeds.md). Este archivo se conserva como referencia histórica.
+>  **Archivo legacy** — el contenido actualizado está en [`01-setup-local/configurar-seeds.md`](01-setup-local/configurar-seeds.md). Este archivo se conserva como referencia histórica.
 
 # Configurar seeds locales (cada PC)
 
-> **Vía oficial actual:** configura connection string, JWT y passwords de seed en un archivo `.env`.  
+> **Vía oficial actual:** configura connection string, JWT y passwords de seed en un archivo `.env`.
 > Guía paso a paso: [`docs/Configurar-env-local.md`](Configurar-env-local.md).
 
 Esta página deja el método anterior con **User Secrets** (opcional / respaldo). **No incluye las contraseñas reales** (tarjeta Trello de Seeds / doc interno del equipo).

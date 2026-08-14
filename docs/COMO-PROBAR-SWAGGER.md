@@ -1,4 +1,4 @@
-> ⚠️ **Archivo legacy** — el contenido actualizado está en [`01-setup-local/probar-swagger.md`](01-setup-local/probar-swagger.md). Este archivo se conserva como referencia histórica.
+>  **Archivo legacy** — el contenido actualizado está en [`01-setup-local/probar-swagger.md`](01-setup-local/probar-swagger.md). Este archivo se conserva como referencia histórica.
 
 # Cómo probar la API en Swagger (con Bearer)
 
@@ -43,7 +43,7 @@ Body:
 ```
 Respuesta esperada: **200** con un `token`. **Copia el valor de `token`.**
 
-### 3. Autorizar — botón **Authorize** 🔒 (arriba a la derecha)
+### 3. Autorizar — botón **Authorize** (arriba a la derecha)
 1. Clic en **Authorize**.
 2. Pega el `token` (solo el token; Swagger le agrega `Bearer ` automáticamente).
 3. Clic en **Authorize** → **Close**.

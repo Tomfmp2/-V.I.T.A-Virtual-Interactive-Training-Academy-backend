@@ -1,6 +1,6 @@
 # Cómo probar la API en Swagger
 
-> **Basado en rama `develop`** · **Fecha:** 13/08/2026  
+> **Basado en rama `develop`** · **Fecha:** 13/08/2026
 > Guía para probar cualquier endpoint desde Swagger UI usando autenticación JWT Bearer.
 
 ---
@@ -8,7 +8,7 @@
 ## Requisitos previos
 
 1. PostgreSQL local corriendo con la base `academia_cursos`.
-2. `.env` completo con connection string, JWT key y passwords de seed.  
+2. `.env` completo con connection string, JWT key y passwords de seed.
    → Ver [`configurar-env.md`](configurar-env.md)
 3. API levantada:
 
@@ -62,7 +62,7 @@ Respuesta esperada: `200` con el campo `token`.
 
 ### 2. Autorizar en Swagger
 
-1. Clic en el botón **Authorize 🔒** (arriba a la derecha).
+1. Clic en el botón **Authorize** (arriba a la derecha).
 2. Pega el token copiado (solo el token; Swagger agrega `Bearer ` automáticamente).
 3. Clic en **Authorize** → **Close**.
 

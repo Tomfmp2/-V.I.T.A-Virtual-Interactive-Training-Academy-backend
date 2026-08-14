@@ -1,13 +1,13 @@
 # Módulo — Levels (`/api/levels`)
 
-> **Basado en rama `feature/reports-api`** · **Fecha:** 13/08/2026  
+> **Basado en rama `feature/reports-api`** · **Fecha:** 13/08/2026
 > La API de niveles ya existía en `develop`; esta ficha completa el entregable de documentación.
 
 ---
 
 ## Estado
 
-✅ **Implementado** (código) · ✅ **Documentado**
+ **Implementado** (código) ·  **Documentado**
 
 ---
 

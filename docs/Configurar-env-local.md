@@ -1,4 +1,4 @@
-> ⚠️ **Archivo legacy** — el contenido actualizado está en [`01-setup-local/configurar-env.md`](01-setup-local/configurar-env.md). Este archivo se conserva como referencia histórica.
+>  **Archivo legacy** — el contenido actualizado está en [`01-setup-local/configurar-env.md`](01-setup-local/configurar-env.md). Este archivo se conserva como referencia histórica.
 
 # Configurar `.env` local (Development)
 
@@ -130,7 +130,7 @@ dotnet run --launch-profile http
 
 El código busca `.env` subiendo carpetas, así que funciona en ambos casos si el archivo está en la raíz del repo.
 
-API local típico: `http://localhost:5044`  
+API local típico: `http://localhost:5044`
 Swagger: `http://localhost:5044/swagger`
 
 ---

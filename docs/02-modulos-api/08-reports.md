@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado**
+ **Implementado**
 
 ---
 

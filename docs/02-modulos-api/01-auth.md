@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado**
+ **Implementado**
 
 ---
 
@@ -146,7 +146,7 @@ Header requerido: `Authorization: Bearer <token>`
 1. Ir a `http://localhost:5044/swagger`.
 2. `POST /api/auth/register` → **Try it out** → completar body → **Execute** → `201`.
 3. `POST /api/auth/login` → **Try it out** → mismas credenciales → `200` → copiar `token`.
-4. Clic en **Authorize 🔒** → pegar token → **Authorize** → **Close**.
+4. Clic en **Authorize** → pegar token → **Authorize** → **Close**.
 5. `GET /api/auth/me` → **Try it out** → **Execute** → `200` con perfil.
 6. `POST /api/auth/logout` → **Execute** → `200`.
 

@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado** (parcial — solo lectura)
+ **Implementado** (parcial — solo lectura)
 
 ---
 

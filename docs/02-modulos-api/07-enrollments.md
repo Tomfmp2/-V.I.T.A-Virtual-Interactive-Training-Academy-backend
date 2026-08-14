@@ -6,7 +6,7 @@
 
 ## Estado
 
-✅ **Implementado** (parcial — cancelar inscripción no implementado)
+ **Implementado** (parcial — cancelar inscripción no implementado)
 
 ---
 
@@ -16,7 +16,7 @@
 | --- | --- | --- | --- |
 | `POST` | `/api/enrollments` | Bearer · cualquier rol | Inscribirse en un curso publicado |
 | `GET` | `/api/enrollments/me` | Bearer · cualquier rol | Ver mis inscripciones |
-| `DELETE` | `/api/enrollments/{id}` | — | ❌ No implementado |
+| `DELETE` | `/api/enrollments/{id}` | — | No implementado |
 
 > El `estudianteId` se extrae del token, no se envía en el body.
 
@@ -69,7 +69,7 @@
 
 ### `DELETE /api/enrollments/{id}`
 
-> ❌ **No implementado.** El endpoint no existe en la versión actual del API.  
+>  **No implementado.** El endpoint no existe en la versión actual del API.
 > Está planeado para una iteración futura (cancelar inscripción).
 
 ---

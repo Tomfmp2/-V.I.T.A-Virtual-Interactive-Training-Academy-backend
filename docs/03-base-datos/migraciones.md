@@ -1,6 +1,6 @@
 # Migraciones EF Core — VITA
 
-> **Basado en rama `develop`** · **Fecha:** 13/08/2026  
+> **Basado en rama `develop`** · **Fecha:** 13/08/2026
 > Resumen del flujo de migraciones. Documentación extendida: [`Documentacion_Migraciones_EF_VITA.md`](../../Documentacion_Migraciones_EF_VITA.md)
 
 ---
@@ -96,12 +96,12 @@ AgregarCampoFotoUrl
 
 ## Buenas prácticas
 
-- ✅ Versionar `Vita.Api/Migrations/` en el repo.
-- ✅ Mantener FK a `AspNetUsers.Id` como `string`.
-- ✅ Revisar migraciones destructivas antes de aplicar en entornos compartidos.
-- ❌ No ejecutar `DB/Script.sql` como despliegue.
-- ❌ No alterar tablas a mano en PostgreSQL para cambios de producto.
-- ❌ No commitear passwords ni connection strings reales.
+- Versionar `Vita.Api/Migrations/` en el repo.
+- Mantener FK a `AspNetUsers.Id` como `string`.
+- Revisar migraciones destructivas antes de aplicar en entornos compartidos.
+- No ejecutar `DB/Script.sql` como despliegue.
+- No alterar tablas a mano en PostgreSQL para cambios de producto.
+- No commitear passwords ni connection strings reales.
 
 ---
 

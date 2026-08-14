@@ -1,4 +1,4 @@
-> ⚠️ **Archivo legacy** — el contenido actualizado está en [`00-convenciones/patron-errores.md`](00-convenciones/patron-errores.md). Este archivo se conserva como referencia histórica.
+>  **Archivo legacy** — el contenido actualizado está en [`00-convenciones/patron-errores.md`](00-convenciones/patron-errores.md). Este archivo se conserva como referencia histórica.
 
 # Patrón de errores del API
 

@@ -29,10 +29,10 @@
 | --- | --- | --- | --- |
 | Foto de perfil | Subir imagen + preview | `FotoUrl` existe · sin upload | `POST /api/auth/me/photo` + archivos estáticos |
 | Detalles personales | Nombre, apellido | Parcial (`GET /me`) | `PUT /api/auth/me` |
-| Detalles personales | Correo (readonly) | ✅ en `GET /me` | Ninguna (MVP: no permitir cambio de email) |
-| Detalles personales | Teléfono + código país | ❌ no en modelo | Migración + `PUT /api/auth/me` + ampliar `GET /me` |
-| Cambiar contraseña | Actual / nueva / confirmar | ❌ | `POST /api/auth/change-password` |
-| Guardar cambios | Submit del formulario | ❌ sin endpoint | Cablear FE a los endpoints anteriores |
+| Detalles personales | Correo (readonly) | en `GET /me` | Ninguna (MVP: no permitir cambio de email) |
+| Detalles personales | Teléfono + código país | no en modelo | Migración + `PUT /api/auth/me` + ampliar `GET /me` |
+| Cambiar contraseña | Actual / nueva / confirmar | | `POST /api/auth/change-password` |
+| Guardar cambios | Submit del formulario | sin endpoint | Cablear FE a los endpoints anteriores |
 
 ---
 
@@ -122,7 +122,7 @@ public DateTime CreatedAt { get; set; }
 
 ### 4.1 Ampliar `GET /api/auth/me` (BE-PR2)
 
-**Auth:** Bearer · cualquier rol activo  
+**Auth:** Bearer · cualquier rol activo
 **Cambio:** respuesta aditiva (compatible hacia atrás).
 
 **Response 200 (ampliado):**
@@ -152,7 +152,7 @@ public DateTime CreatedAt { get; set; }
 
 ### 4.2 `PUT /api/auth/me` (BE-PR3)
 
-**Auth:** Bearer · cualquier rol  
+**Auth:** Bearer · cualquier rol
 **Body:**
 ```json
 {
@@ -188,7 +188,7 @@ public DateTime CreatedAt { get; set; }
 
 ### 4.3 `POST /api/auth/change-password` (BE-PR4)
 
-**Auth:** Bearer · cualquier rol  
+**Auth:** Bearer · cualquier rol
 **Body:**
 ```json
 {
@@ -231,8 +231,8 @@ await _userManager.ChangePasswordAsync(usuario, request.ContraseñaActual, reque
 
 ### 4.4 `POST /api/auth/me/photo` (BE-PR5)
 
-**Auth:** Bearer · cualquier rol  
-**Content-Type:** `multipart/form-data`  
+**Auth:** Bearer · cualquier rol
+**Content-Type:** `multipart/form-data`
 **Campo:** `file` (único archivo)
 
 **Validaciones:**
@@ -279,7 +279,7 @@ await _userManager.ChangePasswordAsync(usuario, request.ContraseñaActual, reque
 | `Controllers/AuthController.cs` | `PUT me`, `POST change-password`, `POST me/photo` |
 | `Program.cs` | `UseStaticFiles`, límite `FormOptions` / `MultipartBodyLengthLimit` si hace falta |
 | `Data/DbSeeder.cs` | (Opcional) teléfono demo admin |
-| `docs/02-modulos-api/10-profile-settings.md` | Ficha del módulo ✅ tras implementar |
+| `docs/02-modulos-api/10-profile-settings.md` | Ficha del módulo  tras implementar |
 | `docs/00-convenciones/contrato-api.md` | Tabla Auth ampliada |
 | `docs/README.md` | Entrada módulo 10 |
 
@@ -363,7 +363,7 @@ Fase 4 — Frontend
   └─ Probar flujo completo los 3 roles
 
 Fase 5 — Documentación
-  └─ 10-profile-settings.md (estado ✅)
+  └─ 10-profile-settings.md (estado )
   └─ contrato-api.md + README
 ```
 
@@ -424,7 +424,7 @@ Fase 5 — Documentación
 - [ ] Migración aplicada en local (`dotnet ef database update`)
 - [ ] Mensajes de error en español
 - [ ] `PerfilPage` persiste cambios contra API real (PR FE separada o mismo sprint)
-- [ ] Ficha `10-profile-settings.md` creada con estado ✅
+- [ ] Ficha `10-profile-settings.md` creada con estado
 - [ ] `contrato-api.md` actualizado
 - [ ] Checklist §8 pasado con cuenta demo `admin@vita.local`
 
